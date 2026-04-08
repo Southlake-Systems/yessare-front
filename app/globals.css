@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #0f4c81;
+  --primary-dark: #0b3a63;
+  --accent: #facc15;
+  --bg: #f5f7fa;
+}
+body {
+  background: var(--bg);
+  color: #171717;
+  font-family: Arial, Helvetica, sans-serif;
+}
