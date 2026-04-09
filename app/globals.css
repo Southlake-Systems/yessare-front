@@ -6,6 +6,18 @@
 @config "../tailwind.config.ts";
 
 body {
-  background-color: white; /* your background */
+  background-color: white; 
   color: black;
+}
+@layer base {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  html, body {
+    scrollbar-width: none; 
+    -ms-overflow-style: none; 
+    overflow-x: hidden; 
+    max-width: 100vw;
+  }
 }

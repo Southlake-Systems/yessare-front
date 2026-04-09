@@ -1,3 +1,4 @@
+import Footer from "./(shop)/components/Footer";
 import Header from "./(shop)/components/Header";
 import Hero from "./(shop)/components/Hero";
 import Section from "./(shop)/components/Section";
@@ -33,6 +34,7 @@ export default function Home() {
 
         <Section title="Recommended for You" items={products} type="product" />
       </div>
+      <Footer />
     </div>
   );
 }
