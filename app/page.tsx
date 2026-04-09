@@ -1,5 +1,6 @@
-import Hero from "./components/Hero";
-import Section from "./components/Section";
+import Header from "./(shop)/components/Header";
+import Hero from "./(shop)/components/Hero";
+import Section from "./(shop)/components/Section";
 
 const categories = [
   "Power Tools",
@@ -21,10 +22,11 @@ const products = [
 
 export default function Home() {
   return (
-    <div className="bg-gray-100 min-h-screen">
+    <div className=" min-h-screen">
+      <Header />
       <Hero />
-
-      <div className="max-w-7xl mx-auto px-4 space-y-8 pb-10 ">
+      
+      <div className="mx-auto px-4 space-y-8 pb-10 ">
         <Section title="Shop by Categories" items={categories} type="category" />
 
         <Section title="Top Deals on Tools" items={products} type="product" />

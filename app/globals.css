@@ -1,16 +1,11 @@
-@import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Jaro:opsz@6..72&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Changa+One:ital@0;1&family=Jaro:opsz@6..72&display=swap');
 
-:root {
-  --primary: #0f4c81;
-  --primary-dark: #0b3a63;
-  --accent: #facc15;
-  --bg: #f5f7fa;
-}
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
 body {
-  background: var(--bg);
-  color: #171717;
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: white; /* your background */
+  color: black;
 }
