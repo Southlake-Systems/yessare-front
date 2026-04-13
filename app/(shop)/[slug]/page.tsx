@@ -1,10 +1,10 @@
 // app/product/[slug]/page.tsx
 // import ProductGallery from "@/components/product/ProductGallery";
-import ProductGallery from "@/app/(shop)/components/product/ProductGallery";
-import ProductInfo from "@/app/(shop)/components/product/ProductInfo";
-import ProductActions from "@/app/(shop)/components/product/ProductActions";
-import ProductDetails from "@/app/(shop)/components/product/ProductDetails";
-import RelatedProducts from "@/app/(shop)/components/product/RelatedProducts";
+import ProductGallery from "@/app/components/product/ProductGallery";
+import ProductInfo from "@/app/components/product/ProductInfo";
+import ProductActions from "@/app/components/product/ProductActions";
+import ProductDetails from "@/app/components/product/ProductDetails";
+import RelatedProducts from "@/app/components/product/RelatedProducts";
 import { products } from "@/data/product";
 
 export default function Page() {

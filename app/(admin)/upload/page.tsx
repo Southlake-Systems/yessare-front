@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import {
     Upload, Plus, Trash2, ChevronLeft, Layers, Box,
@@ -18,7 +19,13 @@ export default function ProductEditor() {
         newSpecs[index][field] = val;
         setSpecs(newSpecs);
     };
-
+    const router = useRouter();
+    const pathname = usePathname();
+    const navItems = [
+  { icon: LayoutDashboard, label: "Orders", path: "/orders" },
+  { icon: Package, label: "Product Catalog", path: "/products" },
+  { icon: Layers, label: "Brands", path: "/brands" },
+];
     const removeSpec = (index: number) => {
         if (specs.length > 1) {
             setSpecs(specs.filter((_, i) => i !== index));
@@ -39,17 +46,24 @@ export default function ProductEditor() {
                 </div>
 
                 <nav className="space-y-1.5 flex-1">
-                    {[
-                        { icon: LayoutDashboard, label: "Orders" },
-                        { icon: Package, label: "Product Catalog", active: true },
-                        // { icon: ListPlus, label: "Bulk Upload" },
-                        // { icon: Settings, label: "Configuration" },
-                    ].map((item) => (
-                        <button key={item.label} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${item.active ? 'bg-slate-100 text-[#005bae]' : 'hover:bg-slate-50 text-slate-500'}`}>
+                        {navItems.map((item) => {
+                        const isActive = pathname === item.path;
+
+                        return (
+                            <button
+                            key={item.label}
+                            onClick={() => router.push(item.path)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
+                                isActive
+                                ? "bg-slate-100 text-[#005bae]"
+                                : "hover:bg-slate-50 text-slate-500"
+                            }`}
+                            >
                             <item.icon size={18} />
                             {item.label}
-                        </button>
-                    ))}
+                            </button>
+                        );
+                        })}
                 </nav>
 
                 {/* <div className="mt-auto p-4 bg-slate-50 rounded-2xl border border-slate-200">
@@ -228,7 +242,6 @@ export default function ProductEditor() {
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>

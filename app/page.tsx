@@ -1,7 +1,8 @@
-import Footer from "./(shop)/components/Footer";
-import Header from "./(shop)/components/Header";
-import Hero from "./(shop)/components/Hero";
-import Section from "./(shop)/components/Section";
+import Footer from "./components/Footer";
+import Header from "./components/Header";
+import Hero from "./components/Hero";
+import Section from "./components/Section";
+import { getBrands } from "@/lib/api";
 
 const categories = [
   "Power Tools",
@@ -21,13 +22,23 @@ const products = [
 ];
 
 
-export default function Home() {
+export default async function Home() {
+
+  const brands = await getBrands();
+  
+
+  
+  const brandNames = brands.map((b: any) => b.name);
+
+
   return (
     <div className=" min-h-screen">
       <Header />
       <Hero />
       
       <div className="mx-auto px-4 space-y-8 pb-10 ">
+        <Section title="Leading Brands" items={brandNames} type="category" />
+
         <Section title="Shop by Categories" items={categories} type="category" />
 
         <Section title="Top Deals on Tools" items={products} type="product" />
