@@ -1,3 +1,4 @@
+import BrandSection from "./components/brand/BrandSection";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
@@ -23,28 +24,22 @@ const products = [
 
 
 export default async function Home() {
-
   const brands = await getBrands();
-  
-
-  
-  const brandNames = brands.map((b: any) => b.name);
-
-
+  console.log(brands)
   return (
-    <div className=" min-h-screen">
+    <div className="min-h-screen">
       <Header />
       <Hero />
-      
-      <div className="mx-auto px-4 space-y-8 pb-10 ">
-        <Section title="Leading Brands" items={brandNames} type="category" />
+
+      <div className="mx-auto px-4 space-y-8 pb-10">
+        
+        <BrandSection brands={brands} />
 
         <Section title="Shop by Categories" items={categories} type="category" />
-
         <Section title="Top Deals on Tools" items={products} type="product" />
-
         <Section title="Recommended for You" items={products} type="product" />
       </div>
+
       <Footer />
     </div>
   );
