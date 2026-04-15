@@ -13,15 +13,17 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   const navItems = [
-    { label: "Dashboard", icon: LayoutDashboard, path: "/admin/dashboard" },
-    { label: "Products", icon: Package, path: "/admin/products" },
-    { label: "Brands", icon: Layers, path: "/admin/brands" },
-    { label: "Upload", icon: Upload, path: "/admin/upload" },
+    { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
+    { label: "Products", path: "/admin/products", icon: Package },
+    { label: "View Brands", path: "/admin/view_brands", icon: Layers },
+    { label: "Add Brands", path: "/admin/add_brands", icon: Layers },
+    { label: "Add Products", path: "/admin/upload", icon: Upload },
+
   ];
 
   return (
     <aside className="w-72 bg-white border-r border-slate-200 flex flex-col p-6">
-      
+
       {/* Logo */}
       <div className="flex items-center gap-3 mb-10">
         <div className="w-10 h-10 bg-[#005bae] rounded-xl flex items-center justify-center text-white font-black">
@@ -41,11 +43,10 @@ export default function Sidebar() {
             <button
               key={item.label}
               onClick={() => router.push(item.path)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${
-                isActive
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all ${isActive
                   ? "bg-slate-100 text-[#005bae]"
                   : "text-slate-500 hover:bg-slate-50"
-              }`}
+                }`}
             >
               <item.icon size={18} />
               {item.label}

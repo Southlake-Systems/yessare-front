@@ -1,4 +1,8 @@
-export default function ProductGallery() {
+type Props = {
+  product: any;
+};
+
+export default function ProductGallery({ product }: Props) {
   return (
     <div className="flex flex-col-reverse sm:flex-row gap-4">
 

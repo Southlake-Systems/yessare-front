@@ -10,13 +10,13 @@ export default function BrandCard({ brand }: { brand: Brand }) {
   return (
     <div className="group cursor-pointer">
       {/* Logo Container */}
-      <div className="relative aspect-[3/2] overflow-hidden rounded-xl border border-gray-100 bg-white p-4 transition-all duration-300 ease-in-out group-hover:border-blue-500 group-hover:shadow-lg group-hover:shadow-blue-500/10">
+      <div className="relative aspect-3/2 overflow-hidden rounded-xl border border-gray-100 bg-white  transition-all duration-300 ease-in-out group-hover:border-blue-500 group-hover:shadow-lg group-hover:shadow-blue-500/10">
         <div className="flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-110">
           {brand.image ? (
             <img
               src={brand.image}
               alt={brand.name}
-              className="h-full w-full object-contain p-4"
+              className="max-h-full max-w-full object-contain"
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-gray-50 uppercase tracking-widest text-gray-300 text-[10px] font-bold">

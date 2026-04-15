@@ -35,8 +35,8 @@ export default function Header() {
       <div className="max-w-full mx-auto px-10 flex items-center justify-between py-5 gap-4">
         
         {/* Logo */}
-        <Link href="/" className="flex-shrink-0 flex items-center gap-3 hover:opacity-80 transition group">
-          <div className="relative w-[50px] h-[40px] md:w-[70px] md:h-[50px]">
+        <Link href="/" className="shrink-0 flex items-center gap-3 hover:opacity-80 transition group">
+          <div className="relative w-12.5 h-10 md:w-17.5 md:h-12.5">
             <Image
               src="/logo.jpeg"
               alt="Yesare Logo"

@@ -1,5 +1,9 @@
 // components/product/ProductActions.tsx
-export default function ProductActions() {
+type Props = {
+  product: any;
+};
+
+export default function ProductActions({ product }: Props) {
   return (
     <div className="flex items-center gap-3 mt-4">
       <button className="bg-black text-white px-5 py-2 rounded">

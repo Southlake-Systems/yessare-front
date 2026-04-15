@@ -5,7 +5,7 @@ type Props = {
   description: string;
 };
 
-export default function ProductInfo({ name, price, description }: any) {
+export default function ProductInfo({ name, price, description }: Props) {
   return (
     <div className="flex flex-col gap-3 sm:gap-4">
       <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold">

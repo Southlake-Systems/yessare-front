@@ -8,11 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        bitcount: ["'Bitcount Prop Single'", "sans-serif"],
-        jaro: ["'Jaro'", "sans-serif"],
-        changa: ["'Changa One'", "cursive"],
-      },
+      // fontFamily: {
+      //   bitcount: ["'Bitcount Prop Single'", "sans-serif"],
+      //   jaro: ["'Jaro'", "sans-serif"],
+      //   changa: ["'Changa One'", "cursive"],
+      // },
       colors: {
         primary: "#005bae",
         secondary: "#1064b5",

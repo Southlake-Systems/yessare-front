@@ -37,43 +37,7 @@ export default function ProductEditor() {
         <div className="flex min-h-screen bg-[#f8f9fa] text-slate-900 font-sans">
 
             {/* 🛠️ CLEAN LIGHT SIDEBAR */}
-            <aside className="hidden xl:flex w-72 bg-white border-r-2 border-slate-200 flex-col sticky top-0 h-screen p-6">
-                <div className="flex items-center gap-3 mb-12 px-2">
-                    <div className="relative w-10 h-10 bg-[#005bae] rounded-xl flex items-center justify-center overflow-hidden">
-                        <Image src="/logo.jpeg" alt="Logo" fill className="object-cover" />
-                    </div>
-                    <span className="text-xl font-black tracking-tighter uppercase">Yesare</span>
-                </div>
-
-                <nav className="space-y-1.5 flex-1">
-                        {navItems.map((item) => {
-                        const isActive = pathname === item.path;
-
-                        return (
-                            <button
-                            key={item.label}
-                            onClick={() => router.push(item.path)}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold text-sm transition-all ${
-                                isActive
-                                ? "bg-slate-100 text-[#005bae]"
-                                : "hover:bg-slate-50 text-slate-500"
-                            }`}
-                            >
-                            <item.icon size={18} />
-                            {item.label}
-                            </button>
-                        );
-                        })}
-                </nav>
-
-                {/* <div className="mt-auto p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                    <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle2 size={14} className="text-emerald-500" />
-                        <span className="text-[10px] font-black uppercase text-slate-400">System Status</span>
-                    </div>
-                    <p className="text-xs font-bold text-slate-600">Database synced 1m ago</p>
-                </div> */}
-            </aside>
+            
 
             {/* 📝 MAIN CONTENT AREA */}
             <div className="flex-1 flex flex-col min-w-0">

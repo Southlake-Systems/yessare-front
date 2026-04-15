@@ -1,4 +1,8 @@
-export default function ProductDetails({ description }: any) {
+type Props = {
+  description: string;
+};
+
+export default function ProductDetails({ description }: Props) {
   return (
     <div className="bg-white p-4 sm:p-6 lg:p-8 rounded-lg">
       <h2 className="font-semibold text-lg sm:text-xl mb-4 sm:mb-6">

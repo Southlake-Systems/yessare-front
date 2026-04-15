@@ -1,13 +1,19 @@
 import BrandCard from "./BrandCard";
 
-// ... Brand type remains the same
+type Brand = {
+  id: number;
+  name: string;
+  image: string | null;
+  description: string | null;
+  favourite: boolean;
+};
 
 export default function BrandSection({ brands }: { brands: Brand[] }) {
   return (
-    <section className="py-8">
+    <section className="px-12 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900">
             Leading Brands
           </h2>
           <div className="h-1 w-12 bg-blue-600 mt-1 rounded-full" />
@@ -19,8 +25,7 @@ export default function BrandSection({ brands }: { brands: Brand[] }) {
         </button>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:gap-6">
-        {brands.map((brand) => (
+<div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:gap-6 items-center justify-center">        {brands.map((brand) => (
           <BrandCard key={brand.id} brand={brand} />
         ))}
       </div>

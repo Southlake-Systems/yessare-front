@@ -19,7 +19,7 @@ export default function ProductCard({ product }: { product: Product }) {
     e.stopPropagation(); // Prevents the Link from triggering
     console.log("Added to cart:", product.name);
   };
-
+  console.log(product);
   const discount = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) 
     : null;
