@@ -7,7 +7,7 @@ type SectionProps =
 
 export default function Section({ title, items, type }: SectionProps) {
   return (
-    <section className="w-full mx-auto px-12 py-10">
+    <section className="w-full mx-auto px-4 md:px-12 py-10">
       
 
       <div className="flex items-end justify-between mb-8 border-b border-gray-100 pb-4">

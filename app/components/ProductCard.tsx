@@ -62,7 +62,7 @@ export default function ProductCard({ product }: { product: Product }) {
           </h3>
 
           <div className="flex items-baseline gap-2 pt-1">
-            <span className="text-lg font-black text-gray-900">
+            <span className="text-xs md:text-xl font-black text-gray-900">
               ₹{product.price.toLocaleString()}
             </span>
             {product.originalPrice && (
