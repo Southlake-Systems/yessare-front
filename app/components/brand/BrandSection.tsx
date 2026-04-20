@@ -9,6 +9,7 @@ type Brand = {
 };
 
 export default function BrandSection({ brands }: { brands: Brand[] }) {
+  
   return (
     <section className="px-4 md:px-12 py-8">
       <div className="flex items-center justify-between mb-6">

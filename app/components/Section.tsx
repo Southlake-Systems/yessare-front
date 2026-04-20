@@ -30,11 +30,8 @@ export default function Section({ title, items, type }: SectionProps) {
             key={i} 
             className="h-full"
           >
-            {type === "category" ? (
-              <CategoryCard name={item as string} />
-            ) : (
               <ProductCard product={item} />
-            )}
+            
           </div>
         ))}
       </div>

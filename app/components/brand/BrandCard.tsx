@@ -7,6 +7,7 @@ type Brand = {
 };
 
 export default function BrandCard({ brand }: { brand: Brand }) {
+  console.log(brand.image);
   return (
     <div className="group cursor-pointer">
       {/* Logo Container */}

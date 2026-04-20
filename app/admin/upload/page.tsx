@@ -22,10 +22,10 @@ export default function ProductEditor() {
     const router = useRouter();
     const pathname = usePathname();
     const navItems = [
-  { icon: LayoutDashboard, label: "Orders", path: "/orders" },
-  { icon: Package, label: "Product Catalog", path: "/products" },
-  { icon: Layers, label: "Brands", path: "/brands" },
-];
+        { icon: LayoutDashboard, label: "Orders", path: "/orders" },
+        { icon: Package, label: "Product Catalog", path: "/products" },
+        { icon: Layers, label: "Brands", path: "/brands" },
+    ];
     const removeSpec = (index: number) => {
         if (specs.length > 1) {
             setSpecs(specs.filter((_, i) => i !== index));
@@ -34,13 +34,13 @@ export default function ProductEditor() {
     const addSpec = () => setSpecs([...specs, { key: "", value: "" }]);
 
     return (
-        <div className="flex min-h-screen bg-[#f8f9fa] text-slate-900 font-sans">
+        <div className="flex w-full min-h-screen bg-[#f8f9fa] text-slate-900 font-sans">
 
             {/* 🛠️ CLEAN LIGHT SIDEBAR */}
-            
+
 
             {/* 📝 MAIN CONTENT AREA */}
-            <div className="flex-1 flex flex-col min-w-0">
+            <div className="flex-1 flex flex-col min-w-">
 
                 {/* Top Header Bar */}
                 <header className="bg-white/80 backdrop-blur-md border-b-2 border-slate-200 px-8 py-4 sticky top-0 z-30 flex items-center justify-between">
@@ -64,63 +64,38 @@ export default function ProductEditor() {
                     </div>
                 </header>
 
-                <div className="p-8 lg:p-12">
-                    <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8">
+                <div className="p-10">
+                    <div className="w-full mx-auto ">
 
                         {/* Left Column */}
                         <div className="lg:col-span-7 space-y-8">
 
                             {/* Product Info */}
-                            <section className="bg-white border-2 border-slate-200 rounded-[2rem] p-8 shadow-sm">
+                            <section className="bg-white border-2 border-slate-200 rounded-4xl p-8 shadow-sm">
                                 <div className="flex items-center gap-3 mb-8">
                                     <span className="text-xs font-black bg-slate-900 text-white w-6 h-6 rounded-md flex items-center justify-center italic">1</span>
                                     <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Primary Details</h3>
                                 </div>
 
                                 <div className="space-y-6">
-                                    <div className="space-y-2">
+                                    <div className="flex flex-col space-y-2">
                                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Listing Title</label>
-                                        <input className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all" placeholder="e.g. 20V Max Lithium-Ion Drill" />
+                                        <input className="w-200 bg-slate-50 border-2 border-slate-200  px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all" placeholder="e.g. 20V Max Lithium-Ion Drill" />
                                     </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Store Category</label>
-                                            <div className="relative">
-                                                <select className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 font-bold outline-none appearance-none">
-                                                     <option></option>
-                                                    <option>Power Tools</option>
-                                                    <option>Safety Gear</option>
-                                                </select>
-                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                                            </div>
-                                        </div>
-                                       <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Sub Category</label>
-                                            <div className="relative">
-                                                <select className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 font-bold outline-none appearance-none">
-                                                    <option ></option>
-                                                    <option>Drilling</option>
-                                                    <option>Safety Gear</option>
-                                                </select>
-                                                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                                            </div>
-                                        </div> 
-                                        <div className="space-y-2">
-                                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Warranty Period</label>
-                                            <input className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 font-bold outline-none" placeholder="e.g. 2 Years" />
-                                        </div>
+                                    <div className="flex flex-col space-y-2">
+                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Listing Title</label>
+                                        <input className="w-200 bg-slate-50 border-2 border-slate-200  px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all" placeholder="e.g. 20V Max Lithium-Ion Drill" />
                                     </div>
 
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Description</label>
-                                        <textarea rows={4} className="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl px-5 py-4 font-medium outline-none focus:bg-white transition-all resize-none" placeholder="Enter product features..." />
+                                        <textarea rows={3} className="w-full bg-slate-50 border-2 border-slate-200 px-5 py-4 font-medium outline-none focus:bg-white transition-all resize-none" placeholder="Enter product features..." />
                                     </div>
                                 </div>
                             </section>
 
                             {/* Specs */}
-                            <section className="bg-white border-2 border-slate-200 rounded-[2rem] p-8 shadow-sm">
+                            <section className="bg-white border-2 border-slate-200   p-8 shadow-sm">
                                 <div className="flex items-center justify-between mb-8">
                                     <div className="flex items-center gap-3">
                                         <span className="text-xs font-black bg-slate-900 text-white w-6 h-6 rounded-md flex items-center justify-center italic">2</span>

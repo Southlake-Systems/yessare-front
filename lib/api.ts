@@ -1,7 +1,8 @@
+const BASE_URL = "http://localhost:8000";
 // lib/api.ts
 export async function getBrands() {
   try {
-    const res = await fetch("http://127.0.0.1:8000/brand/all/", {
+    const res = await fetch(`${BASE_URL}/brand/all/`, {
       cache: "no-store",
     });
 
@@ -22,7 +23,7 @@ export async function getBrands() {
 export async function getProductsByBrand(brandId: number) {
   try {
     const res = await fetch(
-      `http://127.0.0.1:8000/brand/${brandId}/product/`,
+      `${BASE_URL}/brand/${brandId}/product/`,
       {
         cache: "no-store",
       }
@@ -54,10 +55,38 @@ export async function createBrand(data: {
   if (data.description) formData.append("description", data.description);
   if (data.image) formData.append("image", data.image);
 
-  const res = await fetch(`http://127.0.0.1:8000/brand/new/`, {
+  const res = await fetch(`${BASE_URL}/brand/new/`, {
     method: "POST",
     body: formData,
   });
 
   return res.json();
+}
+
+
+export async function getHomeSections() {
+  const res = await fetch(`${BASE_URL}/home/all/?count=5`, {
+    cache: "no-store",
+  });
+
+  const data = await res.json();
+ 
+
+  return data.map((section: any) => ({
+    id: section.id,
+    title: section.title,
+    products: section.products.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price ?? 0,
+      image: p.image
+        ? p.image.startsWith("http")
+          ? p.image
+          : `${BASE_URL}${p.image}`
+        : "/1.png",
+      brand: p.brand?.name ?? "",
+    })
+    ),
+
+  }));
 }
