@@ -1,7 +1,7 @@
 type Brand = {
   id: number;
   name: string;
-  image_thumbnial: string | null;
+  image_thumbnail: string | null;
   description: string | null;
   favourite: boolean;
 };
@@ -12,9 +12,9 @@ export default function BrandCard({ brand }: { brand: Brand }) {
       {/* Logo Container */}
       <div className="relative aspect-3/2 overflow-hidden rounded-xl border border-gray-100 bg-white  transition-all duration-300 ease-in-out group-hover:border-blue-500 group-hover:shadow-lg group-hover:shadow-blue-500/10">
         <div className="flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-110">
-          {brand.image_thumbnial ? (
+          {brand.image_thumbnail ? (
             <img
-              src={brand.image_thumbnial}
+              src={brand.image_thumbnail}
               alt={brand.name}
               className="max-h-full max-w-full object-contain"
             />
