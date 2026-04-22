@@ -1,4 +1,10 @@
+
+
+import { apiClient } from "../lib/apiClient";
+
+
 const BASE_URL = "http://localhost:8000";
+
 // lib/api.ts
 export async function getBrands() {
   try {
@@ -12,6 +18,7 @@ export async function getBrands() {
     }
 
     const data = await res.json();
+    console.log(data)
     return data.response || [];
   } catch (err) {
     console.error("FETCH ERROR:", err);
