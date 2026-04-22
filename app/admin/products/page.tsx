@@ -3,7 +3,6 @@
 import { products } from "@/data/product";
 import { Plus, Search, Filter, Edit3, Trash2, MoreVertical, Package } from "lucide-react";
 import Link from "next/link";
-
 export default function AdminProductsPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] p-4 md:p-8">

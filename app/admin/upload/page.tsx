@@ -1,9 +1,11 @@
 "use client";
 
+
 import { useState } from "react";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { useProduct } from "@/hooks/products/useProduct";
 import {
     Upload, Plus, Trash2, ChevronLeft, Layers, Box,
     Image as ImageIcon, Info, AlertCircle, Save,
@@ -11,9 +13,19 @@ import {
     Settings, Eye, CheckCircle2, ListPlus
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import BrandSelect from "@/app/components/brand/BrandSelect";
 
 export default function ProductEditor() {
     const [specs, setSpecs] = useState([{ key: "Motor", value: "Brushless" }]);
+    const { saveProduct, loading, error } = useProduct();
+    const [form, setForm] = useState({
+            name: "",
+            description: "",
+            brand: "",
+            stock: 0,
+            category: "",
+            warranty: "",
+            });
     const updateSpec = (index: number, field: "key" | "value", val: string) => {
         const newSpecs = [...specs];
         newSpecs[index][field] = val;
@@ -32,6 +44,22 @@ export default function ProductEditor() {
         }
     };
     const addSpec = () => setSpecs([...specs, { key: "", value: "" }]);
+    const handleSave = async () => {
+            try {
+                await saveProduct({
+                name: form.name,
+                description: form.description,
+                brand: form.brand,        // must be brand ID
+                stock: form.stock,
+                category: form.category,
+                warranty: form.warranty,
+                });
+
+                router.push("/products");
+            } catch (err) {
+                console.error(err);
+            }
+            };
 
     return (
         <div className="flex w-full min-h-screen bg-[#f8f9fa] text-slate-900 font-sans">
@@ -55,12 +83,19 @@ export default function ProductEditor() {
                     </div>
 
                     <div className="flex items-center gap-3">
+                        {error && (
+                        <p className="text-red-500 text-sm mt-2">{error}</p>
+                        )}
                         <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition">
                             <Eye size={18} /> Preview
                         </button>
-                        <button className="bg-yellow-500 text-black px-8 py-2.5 rounded-xl font-black text-sm hover:bg-yellow-600 shadow-sm active:scale-95 transition-all flex items-center gap-2">
-                            <Save size={18} /> SAVE CHANGES
-                        </button>
+                            <button
+                            onClick={handleSave}
+                            disabled={loading}
+                            className="bg-yellow-500 text-black px-8 py-2.5 rounded-xl font-black text-sm hover:bg-yellow-600 shadow-sm active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
+                            >
+                            SAVE CHANGES
+                            </button>
                     </div>
                 </header>
 
@@ -78,18 +113,37 @@ export default function ProductEditor() {
                                 </div>
 
                                 <div className="space-y-6">
+                                    <BrandSelect
+                                        value={form.brand}
+                                        onChange={(brandId) =>
+                                            setForm({ ...form, brand: brandId })
+                                        }
+                                        />
                                     <div className="flex flex-col space-y-2">
                                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Listing Title</label>
-                                        <input className="w-200 bg-slate-50 border-2 border-slate-200  px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all" placeholder="e.g. 20V Max Lithium-Ion Drill" />
+                                        <input
+                                        value={form.name}
+                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                                        className="w-200 bg-slate-50 border-2 border-slate-200 px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all"
+                                        placeholder="e.g. 20V Max Lithium-Ion Drill"
+                                        />                                    
                                     </div>
-                                    <div className="flex flex-col space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Listing Title</label>
-                                        <input className="w-200 bg-slate-50 border-2 border-slate-200  px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all" placeholder="e.g. 20V Max Lithium-Ion Drill" />
-                                    </div>
-
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Description</label>
-                                        <textarea rows={3} className="w-full bg-slate-50 border-2 border-slate-200 px-5 py-4 font-medium outline-none focus:bg-white transition-all resize-none" placeholder="Enter product features..." />
+                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Description</label>        
+                                        <textarea
+                                            value={form.description}
+                                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                                            rows={3}
+                                            className="w-full bg-slate-50 border-2 border-slate-200 px-5 py-4 font-medium outline-none focus:bg-white transition-all resize-none"
+                                            />                            
+                                    </div>
+                                    <div>
+                                        <input
+                                            type="number"
+                                            value={form.stock}
+                                            onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-black"
+                                            />
                                     </div>
                                 </div>
                             </section>
