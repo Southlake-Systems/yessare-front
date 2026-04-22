@@ -53,7 +53,7 @@ export async function createBrand(data: {
 
   formData.append("name", data.name);
   if (data.description) formData.append("description", data.description);
-  if (data.image) formData.append("image", data.image);
+  if (data.image) formData.append("image_original", data.image);
 
   const res = await fetch(`${BASE_URL}/brand/new/`, {
     method: "POST",
