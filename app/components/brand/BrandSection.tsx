@@ -3,7 +3,7 @@ import BrandCard from "./BrandCard";
 type Brand = {
   id: number;
   name: string;
-  image: string | null;
+  image_thumbnial: string | null;
   description: string | null;
   favourite: boolean;
 };
