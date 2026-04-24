@@ -8,11 +8,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      // fontFamily: {
-      //   bitcount: ["'Bitcount Prop Single'", "sans-serif"],
-      //   jaro: ["'Jaro'", "sans-serif"],
-      //   changa: ["'Changa One'", "cursive"],
-      // },
+     animation: {
+        marquee: 'marquee 25s linear infinite',
+      },
+      keyframes: {
+        marquee: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+      },
       colors: {
         primary: "#005bae",
         secondary: "#1064b5",

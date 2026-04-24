@@ -1,7 +1,7 @@
 type Brand = {
   id: number;
   name: string;
-  image_thumbnail: string | null;
+  image_original: string | null;
   description: string | null;
   favourite: boolean;
 };
@@ -10,11 +10,11 @@ export default function BrandCard({ brand }: { brand: Brand }) {
   return (
     <div className="group cursor-pointer">
       {/* Logo Container */}
-      <div className="relative aspect-3/2 overflow-hidden rounded-xl border border-gray-100 bg-white  transition-all duration-300 ease-in-out group-hover:border-blue-500 group-hover:shadow-lg group-hover:shadow-blue-500/10">
-        <div className="flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-110">
-          {brand.image_thumbnail ? (
+      <div className="relative aspect-3/2 overflow-hidden rounded-xl border border-gray-100 bg-white  transition-all duration-300 ease-in-out ">
+        <div className="flex h-full w-full items-center justify-center transition-transform duration-300 ">
+          {brand.image_original ? (
             <img
-              src={brand.image_thumbnail}
+              src={brand.image_original}
               alt={brand.name}
               className="max-h-full max-w-full object-contain"
             />
@@ -28,7 +28,7 @@ export default function BrandCard({ brand }: { brand: Brand }) {
 
       {/* Brand Info */}
       <div className="mt-3 px-1 text-center">
-        <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+        <h3 className="text-sm font-semibold text-gray-900  transition-colors">
           {brand.name}
         </h3>
       </div>

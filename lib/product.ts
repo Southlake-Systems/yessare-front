@@ -1,7 +1,7 @@
 import { apiClient } from "../lib/apiClient";
 
 export type ProductPayload = {
-    name: string;
+  name: string;
   brand: string; // brand id
   description?: string;
   model_number?: string;

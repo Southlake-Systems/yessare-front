@@ -1,243 +1,214 @@
 "use client";
 
-
 import { useState } from "react";
-import Image from "next/image";
-import { useRouter, usePathname } from "next/navigation";
-import Link from "next/link";
-import { useProduct } from "@/hooks/products/useProduct";
-import {
-    Upload, Plus, Trash2, ChevronLeft, Layers, Box,
-    Image as ImageIcon, Info, AlertCircle, Save,
-    ChevronDown, LayoutDashboard, Package,
-    Settings, Eye, CheckCircle2, ListPlus
+import { useRouter } from "next/navigation";
+import { 
+  ChevronLeft, Save, Plus, Trash2, Hash, Box, 
+  Info, DollarSign, List, Image as ImageIcon 
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useProduct } from "@/hooks/products/useProduct";
 import BrandSelect from "@/app/components/brand/BrandSelect";
 
 export default function ProductEditor() {
-    const [specs, setSpecs] = useState([{ key: "Motor", value: "Brushless" }]);
-    const { saveProduct, loading, error } = useProduct();
-    const [form, setForm] = useState({
-            name: "",
-            description: "",
-            brand: "",
-            stock: 0,
-            category: "",
-            warranty: "",
-            });
-    const updateSpec = (index: number, field: "key" | "value", val: string) => {
-        const newSpecs = [...specs];
-        newSpecs[index][field] = val;
-        setSpecs(newSpecs);
-    };
-    const router = useRouter();
-    const pathname = usePathname();
-    const navItems = [
-        { icon: LayoutDashboard, label: "Orders", path: "/orders" },
-        { icon: Package, label: "Product Catalog", path: "/products" },
-        { icon: Layers, label: "Brands", path: "/brands" },
-    ];
-    const removeSpec = (index: number) => {
-        if (specs.length > 1) {
-            setSpecs(specs.filter((_, i) => i !== index));
-        }
-    };
-    const addSpec = () => setSpecs([...specs, { key: "", value: "" }]);
-    const handleSave = async () => {
-            try {
-                await saveProduct({
-                name: form.name,
-                description: form.description,
-                brand: form.brand,        // must be brand ID
-                stock: form.stock,
-                category: form.category,
-                warranty: form.warranty,
-                });
+  const { saveProduct, loading, error } = useProduct();
+  const router = useRouter();
 
-                router.push("/products");
-            } catch (err) {
-                console.error(err);
-            }
-            };
+  const [form, setForm] = useState({
+    name: "",
+    brand: "",
+    description: "",
+    model_number: "",
+    stock: 0,
+    category: "",
+    warranty: "",
+    mrp: "",
+    selling_price: "",
+    discount_rate: "",
+    specs: [{ name: "", spec: "" }],
+    features: [{ name: "" }]
+  });
 
-    return (
-        <div className="flex w-full min-h-screen bg-[#f8f9fa] text-slate-900 font-sans">
+  const handleSave = async () => {
+    try {
+      await saveProduct(form);
+      router.push("/admin/products"); 
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-            {/* 🛠️ CLEAN LIGHT SIDEBAR */}
-
-
-            {/* 📝 MAIN CONTENT AREA */}
-            <div className="flex-1 flex flex-col min-w-">
-
-                {/* Top Header Bar */}
-                <header className="bg-white/80 backdrop-blur-md border-b-2 border-slate-200 px-8 py-4 sticky top-0 z-30 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                        <button className="xl:hidden p-2 bg-slate-100 rounded-lg"><ChevronLeft /></button>
-                        <div>
-                            <h1 className="text-xl font-black text-slate-800 uppercase tracking-tight">Create Listing</h1>
-                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center gap-1">
-                                Inventory <ChevronLeft size={8} className="rotate-180" /> Power Tools
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                        {error && (
-                        <p className="text-red-500 text-sm mt-2">{error}</p>
-                        )}
-                        <button className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition">
-                            <Eye size={18} /> Preview
-                        </button>
-                            <button
-                            onClick={handleSave}
-                            disabled={loading}
-                            className="bg-yellow-500 text-black px-8 py-2.5 rounded-xl font-black text-sm hover:bg-yellow-600 shadow-sm active:scale-95 transition-all flex items-center gap-2 disabled:opacity-50"
-                            >
-                            SAVE CHANGES
-                            </button>
-                    </div>
-                </header>
-
-                <div className="p-10">
-                    <div className="w-full mx-auto ">
-
-                        {/* Left Column */}
-                        <div className="lg:col-span-7 space-y-8">
-
-                            {/* Product Info */}
-                            <section className="bg-white border-2 border-slate-200 rounded-4xl p-8 shadow-sm">
-                                <div className="flex items-center gap-3 mb-8">
-                                    <span className="text-xs font-black bg-slate-900 text-white w-6 h-6 rounded-md flex items-center justify-center italic">1</span>
-                                    <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Primary Details</h3>
-                                </div>
-
-                                <div className="space-y-6">
-                                    <BrandSelect
-                                        value={form.brand}
-                                        onChange={(brandId) =>
-                                            setForm({ ...form, brand: brandId })
-                                        }
-                                        />
-                                    <div className="flex flex-col space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Listing Title</label>
-                                        <input
-                                        value={form.name}
-                                        onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                        className="w-200 bg-slate-50 border-2 border-slate-200 px-5 py-4 text-lg font-bold focus:bg-white focus:border-[#005bae] outline-none transition-all"
-                                        placeholder="e.g. 20V Max Lithium-Ion Drill"
-                                        />                                    
-                                    </div>
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Description</label>        
-                                        <textarea
-                                            value={form.description}
-                                            onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                            rows={3}
-                                            className="w-full bg-slate-50 border-2 border-slate-200 px-5 py-4 font-medium outline-none focus:bg-white transition-all resize-none"
-                                            />                            
-                                    </div>
-                                    <div>
-                                        <input
-                                            type="number"
-                                            value={form.stock}
-                                            onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-black"
-                                            />
-                                    </div>
-                                </div>
-                            </section>
-
-                            {/* Specs */}
-                            <section className="bg-white border-2 border-slate-200   p-8 shadow-sm">
-                                <div className="flex items-center justify-between mb-8">
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-xs font-black bg-slate-900 text-white w-6 h-6 rounded-md flex items-center justify-center italic">2</span>
-                                        <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Specifications</h3>
-                                    </div>
-                                    <button onClick={addSpec} className="text-[10px] font-black bg-slate-100 px-3 py-1 rounded hover:bg-slate-200 transition">ADD ROW</button>
-                                </div>
-
-                                <div className="space-y-2">
-                                    {specs.map((s, i) => (
-                                        <div key={i} className="flex gap-2 group">
-                                            <input
-                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-xs outline-none focus:border-[#005bae]"
-                                                placeholder="Field (e.g. Torque)"
-                                                value={s.key}
-                                                onChange={(e) => updateSpec(i, "key", e.target.value)} // Fixes the error
-                                            />
-                                            <input
-                                                className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 font-bold text-xs outline-none focus:border-[#005bae]"
-                                                placeholder="Value (e.g. 50Nm)"
-                                                value={s.value}
-                                                onChange={(e) => updateSpec(i, "value", e.target.value)} // Fixes the error
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() => removeSpec(i)}
-                                                className="text-slate-300 hover:text-red-500 transition px-2"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            </section>
-                        </div>
-
-                        {/* Right Column */}
-                        <div className="lg:col-span-5 space-y-8">
-
-                            {/* Pricing */}
-                            <div className="bg-white border-2 border-slate-200 rounded-[2.5rem] p-8 shadow-sm">
-                                <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-6">Commercials</h3>
-
-                                <div className="space-y-6">
-                                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                                        <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-2 block">MRP Price</label>
-                                        <div className="flex items-baseline gap-1">
-                                            <span className="text-2xl font-black text-slate-300">₹</span>
-                                            <input className="bg-transparent text-4xl font-black outline-none w-full" placeholder="0" />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Stock</label>
-                                            <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-black" placeholder="0" />
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-[10px] font-black text-slate-400 tracking-widest uppercase">Discount %</label>
-                                            <input type="number" className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 font-black" placeholder="0" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Photos */}
-                            <div className="bg-white border-2 border-slate-200 rounded-[2.5rem] p-8 shadow-sm">
-                                <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-[10px] font-black uppercase tracking-widest text-slate-400">Media Library</h3>
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-3">
-                                    <label className="col-span-3 aspect-video border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition-all group">
-                                        <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center mb-2 group-hover:bg-[#005bae]/10 transition-colors">
-                                            <Upload size={20} className="text-slate-400 group-hover:text-[#005bae]" />
-                                        </div>
-                                        <span className="text-[10px] font-black uppercase tracking-tighter">Main Image</span>
-                                        <input type="file" className="hidden" />
-                                    </label>
-                                    <div className="aspect-square bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200"><Plus size={16} /></div>
-                                    <div className="aspect-square bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200"><Plus size={16} /></div>
-                                    <div className="aspect-square bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center text-slate-200"><Plus size={16} /></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen bg-[#f4f6f8] text-sm text-slate-700">
+      {/* SIMPLE COMPACT HEADER */}
+      <header className="bg-white border-b border-slate-300 px-4 py-3 flex items-center justify-between sticky top-0 z-50">
+        <div className="flex items-center gap-4">
+          <button onClick={() => router.back()} className="text-slate-500 hover:text-slate-800 flex items-center gap-1">
+            <ChevronLeft size={16} /> Back
+          </button>
+          <h1 className="font-bold text-lg border-l pl-4 border-slate-300">Add Product</h1>
         </div>
-    );
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="bg-[#005bae] text-white px-6 py-2 rounded font-semibold text-sm hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+        >
+          <Save size={16} /> {loading ? "Saving..." : "Save Product"}
+        </button>
+      </header>
+
+      <main className="p-6 max-w-7xl mx-auto grid grid-cols-12 gap-6">
+        
+        {/* LEFT COLUMN: PRIMARY DETAILS */}
+        <div className="col-span-12 lg:col-span-8 space-y-6">
+          
+          <div className="bg-white border border-slate-300 shadow-sm">
+            <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 font-bold flex items-center gap-2">
+              <Info size={14} /> Basic Information
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block font-semibold mb-1">Product Name</label>
+                <input
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full p-2 border border-slate-300 rounded focus:border-blue-500 outline-none"
+                  placeholder="Enter product title"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-semibold mb-1">Brand</label>
+                  <BrandSelect value={form.brand} onChange={(id) => setForm({ ...form, brand: id })} />
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1">Category</label>
+                  <input
+                    value={form.category}
+                    onChange={(e) => setForm({ ...form, category: e.target.value })}
+                    className="w-full p-2 border border-slate-300 rounded outline-none"
+                    placeholder="Category"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block font-semibold mb-1">Description</label>
+                <textarea
+                  rows={4}
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  className="w-full p-2 border border-slate-300 rounded outline-none resize-none"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-300 shadow-sm">
+            <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 font-bold flex items-center justify-between">
+              <span className="flex items-center gap-2"><List size={14} /> Technical Specs</span>
+              <button 
+                onClick={() => setForm({...form, specs: [...form.specs, { name: "", spec: "" }]})}
+                className="text-blue-600 text-xs font-bold hover:underline"
+              >
+                + Add Row
+              </button>
+            </div>
+            <table className="w-full">
+              <thead className="bg-slate-50 text-xs uppercase text-slate-500">
+                <tr>
+                  <th className="px-4 py-2 text-left border-b border-slate-200">Label</th>
+                  <th className="px-4 py-2 text-left border-b border-slate-200">Value</th>
+                  <th className="px-4 py-2 w-10 border-b border-slate-200"></th>
+                </tr>
+              </thead>
+              <tbody>
+                {form.specs.map((s, i) => (
+                  <tr key={i}>
+                    <td className="p-2 border-b border-slate-100">
+                      <input 
+                        className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500" 
+                        value={s.name}
+                        onChange={(e) => {
+                          const n = [...form.specs]; n[i].name = e.target.value; setForm({...form, specs: n});
+                        }}
+                      />
+                    </td>
+                    <td className="p-2 border-b border-slate-100">
+                      <input 
+                        className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500" 
+                        value={s.spec}
+                        onChange={(e) => {
+                          const n = [...form.specs]; n[i].spec = e.target.value; setForm({...form, specs: n});
+                        }}
+                      />
+                    </td>
+                    <td className="p-2 border-b border-slate-100">
+                      <button onClick={() => setForm({...form, specs: form.specs.filter((_, idx) => idx !== i)})} className="text-slate-400 hover:text-red-500">
+                        <Trash2 size={14} />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: PRICING & INVENTORY */}
+        <div className="col-span-12 lg:col-span-4 space-y-6">
+          
+          <div className="bg-white border border-slate-300 shadow-sm">
+            <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 font-bold flex items-center gap-2">
+              <DollarSign size={14} /> Pricing & Stock
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="block font-semibold mb-1">MRP (₹)</label>
+                <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.mrp} onChange={(e) => setForm({...form, mrp: e.target.value})} />
+              </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-semibold mb-1 text-xs">Selling Price</label>
+                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.selling_price} onChange={(e) => setForm({...form, selling_price: e.target.value})} />
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1 text-xs">Discount %</label>
+                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.discount_rate} onChange={(e) => setForm({...form, discount_rate: e.target.value})} />
+                </div>
+              </div>
+              <hr className="border-slate-100" />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-semibold mb-1 text-xs text-orange-600">Stock Qty</label>
+                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.stock} onChange={(e) => setForm({...form, stock: Number(e.target.value)})} />
+                </div>
+                <div>
+                  <label className="block font-semibold mb-1 text-xs">Warranty</label>
+                  <input type="text" className="w-full p-2 border border-slate-300 rounded" value={form.warranty} onChange={(e) => setForm({...form, warranty: e.target.value})} />
+                </div>
+              </div>
+              <div>
+                <label className="block font-semibold mb-1 text-xs">Model No.</label>
+                <input type="text" className="w-full p-2 border border-slate-300 rounded" value={form.model_number} onChange={(e) => setForm({...form, model_number: e.target.value})} />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-slate-300 shadow-sm p-4">
+            <div className="font-bold mb-3 flex items-center gap-2"><ImageIcon size={14}/> Image Upload</div>
+            <label className="border-2 border-dashed border-slate-200 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition">
+              <span className="text-blue-600 font-bold">Choose File</span>
+              <span className="text-xs text-slate-400 mt-1">PNG, JPG up to 5MB</span>
+              <input type="file" className="hidden" />
+            </label>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 p-3 text-red-600 text-xs rounded">
+              <strong>Error:</strong> {error}
+            </div>
+          )}
+        </div>
+      </main>
+    </div>
+  );
 }

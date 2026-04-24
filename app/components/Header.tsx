@@ -26,14 +26,13 @@ export default function Header() {
   ];
 
   return (
-    <header 
-      className={` bg-background text-textPrimary sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled ? "shadow-lg py-1" : "shadow-sm py-0"
-      }`}
+    <header
+      className={` bg-background text-textPrimary sticky top-0 z-50 transition-all duration-300 ${isScrolled ? "shadow-lg py-1" : "shadow-sm py-0"
+        }`}
     >
       {/* Main Bar */}
       <div className="max-w-full mx-auto px-10 flex items-center justify-between py-5 gap-4">
-        
+
         {/* Logo */}
         <Link href="/" className="shrink-0 flex items-center gap-3 hover:opacity-80 transition group">
           <div className="relative w-12.5 h-10 md:w-17.5 md:h-12.5">
@@ -63,25 +62,16 @@ export default function Header() {
         </div>
 
         {/* Desktop Actions */}
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-          <Link href="/account" className="flex flex-col items-center gap-1 hover:text-yellow-500 transition group">
-            <User size={20} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="text-[11px] uppercase tracking-wider">Account</span>
-          </Link>
+        <div className="hidden md:flex items-center gap-10">
+          <Link 
+            href="/contact" 
+                        className="bg-yellow-400 hover:bg-green-600 hover:text-white text-black px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-300"
 
-          <Link href="/orders" className="flex flex-col items-center gap-1 hover:text-yellow-500 transition group">
-            <Package size={20} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="text-[11px] uppercase tracking-wider">Orders</span>
+          >
+            Contact Us
           </Link>
-
-          <Link href="/cart" className="flex flex-col items-center gap-1 hover:text-yellow-500 transition relative group">
-            <ShoppingCart size={20} className="group-hover:-translate-y-0.5 transition-transform" />
-            <span className="text-[11px] uppercase tracking-wider">Cart</span>
-            <span className="absolute -top-1 -right-2 bg-yellow-400 text-black text-[10px] font-bold h-4 w-4 flex items-center justify-center rounded-full shadow-sm">
-              2
-            </span>
-          </Link>
-        </div>
+        </div>  
+          
 
         {/* 📱 Mobile Actions */}
         <div className="flex md:hidden items-center gap-4">
@@ -91,7 +81,7 @@ export default function Header() {
               2
             </span>
           </Link>
-          <button 
+          <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="p-1 hover:bg-gray-100  rounded-md transition"
           >
@@ -132,7 +122,7 @@ export default function Header() {
         {isMenuOpen && (
           <>
             {/* Backdrop */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -140,7 +130,7 @@ export default function Header() {
               className="fixed inset-0 bg-black/50 backdrop-blur-sm z-60 md:hidden"
             />
             {/* Drawer */}
-            <motion.div 
+            <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
@@ -149,21 +139,21 @@ export default function Header() {
             >
               <div className="flex justify-between items-center mb-8">
                 <span className="text-xl font-bold">Menu</span>
-                <button onClick={() => setIsMenuOpen(false)}><X size={24}/></button>
+                <button onClick={() => setIsMenuOpen(false)}><X size={24} /></button>
               </div>
-              
+
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-4 border-b pb-6">
                   <Link href="/account" className="flex items-center gap-3 text-lg font-medium"><User /> My Account</Link>
                   <Link href="/orders" className="flex items-center gap-3 text-lg font-medium"><Package /> My Orders</Link>
                 </div>
-                
+
                 <div className="flex flex-col gap-5">
                   <span className="text-xs uppercase text-gray-400 font-bold tracking-widest">Categories</span>
                   {categories.map((cat) => (
-                    <Link 
-                      key={cat} 
-                      href="#" 
+                    <Link
+                      key={cat}
+                      href="#"
                       className="text-lg font-semibold hover:text-yellow-500 transition"
                       onClick={() => setIsMenuOpen(false)}
                     >

@@ -29,9 +29,9 @@ export default function BrandSelect({ value, onChange }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-sm font-semibold text-gray-600">
+      {/* <label className="text-sm font-semibold text-gray-600">
         Brand
-      </label>
+      </label> */}
 
       <select
         value={value || ""}
