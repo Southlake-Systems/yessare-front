@@ -97,3 +97,18 @@ export async function getHomeSections() {
 
   }));
 }
+
+export async function getProductById(productId: number) {
+  try {
+    const res = await fetch(`http://localhost:8000/product/${productId}/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) throw new Error("Failed to fetch product");
+
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
