@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-background text-textPrimary min-h-screen scrollbar-hide overflow-y-scroll">
+      <body className="bg-background text-textPrimary  scrollbar-hide overflow-y-scroll">
         {children}   
       </body>
     </html>

@@ -1,20 +1,21 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: "http",
-        hostname: "10.60.121.48",
-        port: "8000",
-        pathname: "/**",
+        protocol: 'https',
+        hostname: 'yessare-ecom-images.s3.ap-south-1.amazonaws.com',
+        port: '',
+        pathname: '/**',
       },
+      // Keep your localhost pattern if you're still testing local images too
       {
-        protocol: "https",
-        hostname: "yessare-ecom-images.s3.ap-south-1.amazonaws.com",
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '8000',
+        pathname: '/media/**',
       },
     ],
-    dangerouslyAllowLocalIP: true,
   },
 };
 

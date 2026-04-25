@@ -1,6 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { liveSearch } from "@/lib/api";
+
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart, User, Package, Menu, X, Search } from "lucide-react";
@@ -9,6 +13,31 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [query, setQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]);
+  const router = useRouter();
+
+  const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    if (value.length >= 2) {
+      const data = await liveSearch(value);
+      // Limit to 7 results here
+      setSuggestions(data.slice(0, 7));
+    } else {
+      setSuggestions([]);
+    }
+  };
+
+  const handleSelect = (id: number) => {
+    router.push(`/product/${id}`);
+  };
+
+  const handleSearch = () => {
+    if (!query) return;
+    router.push(`/search?q=${query}`);
+  };
 
   // Add shadow on scroll for better depth
   useEffect(() => {
@@ -49,29 +78,53 @@ export default function Header() {
         </Link>
 
         {/* 🔍 Desktop Search */}
-        <div className="hidden md:flex flex-1 max-w-xl  relative group">
+        <div className="hidden md:flex flex-1 max-w-xl relative group">
           <input
-            type="text"
-            placeholder="Search premium power tools..."
+            value={query}
+            onChange={handleChange}
+            placeholder="Search products..."
             className="w-full px-5 py-2.5 rounded-l-full bg-gray-100 focus:bg-white border-2 border-transparent focus:border-yellow-400 text-black outline-none transition-all"
           />
-          <button className="bg-yellow-400 px-6 rounded-r-full text-black font-bold hover:bg-yellow-500 transition-colors flex items-center gap-2">
+
+
+          {suggestions.length > 0 && (
+            <div className="absolute top-full left-0 w-[calc(100%-120px)] bg-white border border-gray-200 shadow-xl rounded-b-xl z-[60] mt-1 overflow-hidden">
+              {suggestions.map((item: any) => (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    handleSelect(item.id);
+                    setSuggestions([]); // Clear suggestions after clicking
+                  }}
+                  className="w-full flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors text-left border-b last:border-0"
+                >
+                  <Search size={14} className="text-gray-400" />
+                  <span className="text-sm text-gray-800 font-medium">{item.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
+
+          <button
+            onClick={handleSearch}
+            className="bg-yellow-400 hover:bg-green-600 hover:text-white text-black px-8 py-2.5 rounded-r-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shrink-0"
+          >
             <Search size={18} />
             <span>Search</span>
           </button>
         </div>
-
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-10">
-          <Link 
-            href="/contact" 
-                        className="bg-yellow-400 hover:bg-green-600 hover:text-white text-black px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-300"
+          <Link
+            href="/contact"
+            className="bg-yellow-400 hover:bg-green-600 hover:text-white text-black px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-300"
 
           >
             Contact Us
           </Link>
-        </div>  
-          
+        </div>
+
 
         {/* 📱 Mobile Actions */}
         <div className="flex md:hidden items-center gap-4">

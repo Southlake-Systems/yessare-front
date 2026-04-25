@@ -35,22 +35,31 @@ export default async function Home() {
       <Header />
 
       {/* HERO SECTION */}
-      <section className="bg-background py-32 md:py-48 px-4 sm:px-6 lg:px-8 border-b border-gray-100">
-        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-8 tracking-tight text-white  leading-tight">
-            Yessare — Kerala’s First <span className="text-yellow-500">Tools Supermarket</span>
+      <section
+        className=" relative py-32 md:py-70 px-4 sm:px-6 lg:px-8 border-b border-gray-100 bg-cover bg-center"
+        style={{
+          backgroundImage: "url('/main2.png')", // 
+        }}
+      >
+        <div className="absolute inset-0 bg-black/60"></div>
+
+        <div className="relative max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
+          <h1 className="text-5xl md:text-6xl font-extrabold mb-8 tracking-tight text-white leading-tight">
+            Yessare — Kerala’s First{" "}
+            <span className="text-blue-400">Tools Supermarket</span>
           </h1>
-          <p className="max-w-3xl text-xl md:text-2xl text-white leading-relaxed mb-12">
+
+          <p className="max-w-3xl text-xl md:text-2xl text-gray-200 leading-relaxed mb-12">
             One-stop destination for all your tool needs with a wide multibrand collection, best pricing, and trusted service.
           </p>
+
           <div className="flex flex-col sm:flex-row gap-6">
-            <Link
+            <a
               href="/shop"
-              className="inline-block bg-yellow-400 hover:bg-yellow-500 text-black px-10 py-5 rounded-full font-bold transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+              className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-10 py-5 rounded-full font-bold transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Shop Now
-            </Link>
-
+            </a>
           </div>
         </div>
       </section>
@@ -72,7 +81,7 @@ export default async function Home() {
           </div>
           <div className="aspect-w-16 aspect-h-9 md:aspect-w-1 md:aspect-h-1 overflow-hidden rounded-3xl shadow-2xl">
             <img
-              src="https://via.placeholder.com/800x600/f3f4f6/374151?text=Yessare+Tools+Store+Photo"
+              src="/shop.png"
               alt="Yessare Tools Store"
               className="object-cover w-full h-full"
             />
@@ -186,7 +195,80 @@ export default async function Home() {
           </div>
         </div>
       </section>
+      {/* OWNER SECTION */}
+      <section className="bg-slate-50 py-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-12 md:gap-20">
+          {/* Left Side: Round Image */}
+          <div className="relative">
+            <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-8 border-white shadow-2xl">
+              <img
+                src="https://via.placeholder.com/400x400?text=Owner+Photo"
+                alt="Founder of Yessare"
+                className="w-full h-full object-cover"
+              />
+            </div>
+            {/* Decorative Badge */}
+            <div className="absolute -bottom-4 -right-4 bg-yellow-400 text-black font-bold px-6 py-3 rounded-2xl shadow-lg transform rotate-3">
+              Founder
+            </div>
+          </div>
 
+          {/* Right Side: Text */}
+          <div className="flex-1 text-center md:text-left">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-6">
+              The Vision Behind <span className="text-yellow-500">Yessare</span>
+            </h2>
+            <p className="text-lg text-slate-600 leading-relaxed mb-6">
+              "Our journey began in 2016 with a simple goal: to make high-quality tools accessible to every worker in Kerala. What started as a rental service has evolved into a community hub for professionals and hobbyists alike. We believe that with the right tools, anyone can build greatness."
+            </p>
+            <div className="space-y-1">
+              <p className="text-xl font-bold text-slate-900">Sreerajan Savidham</p>
+              <p className="text-yellow-600 font-medium">Founder & Managing Director</p>
+            </div>
+          </div>
+        </div>
+      </section>
+      {/* TESTIMONIALS SECTION */}
+      <section className="bg-white py-24 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 mb-12 text-center">
+          <h2 className="text-3xl md:text-5xl font-black text-slate-900">
+            Trusted by <span className="text-yellow-500">Many</span>
+          </h2>
+        </div>
+
+        <div className="relative flex">
+          {/* Rolling Track */}
+          <div className="animate-scroll flex gap-8">
+            {[...Array(2)].map((_, i) => (
+              <div key={i} className="flex gap-8">
+                {[
+                  { name: "Rahul K.", role: "Contractor", text: "Best price for Bosch tools in Kollam. Highly recommended!" },
+                  { name: "Suresh Mani", role: "DIY Enthusiast", text: "The service center is excellent. They repaired my drill in one day." },
+                  { name: "Anjali V.", role: "Architect", text: "Kerala's first tools supermarket indeed! The variety is unmatched." },
+                  { name: "Deepak Nair", role: "Industrialist", text: "Genuine spares and expert advice. Yessare is my go-to store." },
+                  { name: "Abhilash", role: "Electrician", text: "Affordable pricing that beats online stores easily." }
+                ].map((review, idx) => (
+                  <div
+                    key={idx}
+                    className="w-[350px] p-8 rounded-3xl bg-slate-50 border border-slate-100 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex text-yellow-400 mb-4 text-xl">★★★★★</div>
+                    <p className="text-slate-700 italic mb-6">"{review.text}"</p>
+                    <div>
+                      <p className="font-bold text-slate-900">{review.name}</p>
+                      <p className="text-sm text-slate-500">{review.role}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
+
+          {/* Gradient Fades for the edges */}
+          <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-white to-transparent z-10"></div>
+          <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-white to-transparent z-10"></div>
+        </div>
+      </section>
       {/* CTA SECTION */}
       <section className="bg-yellow-400 text-black py-28 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center">

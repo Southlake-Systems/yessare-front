@@ -1,26 +1,33 @@
-// components/product/ProductInfo.tsx
-type Props = {
+// @/app/components/product/ProductInfo.tsx
+
+interface ProductInfoProps {
   name: string;
   price: number;
-  description: string;
-};
+  originalPrice?: number;
+  description?: string;
+  brand?: string;
+}
 
-export default function ProductInfo({ name, price, description }: Props) {
+export default function ProductInfo({ 
+  name, 
+  price, 
+  originalPrice, 
+  description, 
+  brand 
+}: ProductInfoProps) {
   return (
-    <div className="flex flex-col gap-3 sm:gap-4">
-      <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold">
-        {name}
-      </h1>
-
-      <div className="text-yellow-500 text-sm sm:text-lg">★★★★☆</div>
-
-      <p className="text-xl sm:text-2xl lg:text-3xl font-bold">
-        ₹{price}
-      </p>
-
-      <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
-        {description}
-      </p>
+    <div className="space-y-4">
+      {brand && <p className="text-yellow-600 font-bold uppercase text-xs">{brand}</p>}
+      <h1 className="text-3xl font-black text-gray-900">{name}</h1>
+      
+      <div className="flex items-baseline gap-3">
+        <span className="text-2xl font-black text-gray-900">₹{price.toLocaleString()}</span>
+        {originalPrice && originalPrice > price && (
+          <span className="text-lg text-gray-400 line-through">₹{originalPrice.toLocaleString()}</span>
+        )}
+      </div>
+      
+      <p className="text-gray-600 leading-relaxed">{description}</p>
     </div>
   );
 }

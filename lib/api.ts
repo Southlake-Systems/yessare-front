@@ -3,7 +3,7 @@
 import { apiClient } from "../lib/apiClient";
 
 
-const BASE_URL = "http://localhost:8000";
+export const BASE_URL = "http://localhost:8000";
 
 // lib/api.ts
 export async function getBrands() {
@@ -77,7 +77,7 @@ export async function getHomeSections() {
   });
 
   const data = await res.json();
- 
+
 
   return data.map((section: any) => ({
     id: section.id,
@@ -98,17 +98,53 @@ export async function getHomeSections() {
   }));
 }
 
-export async function getProductById(productId: number) {
+export async function liveSearch(q: string) {
+  if (q.length < 2) return [];
+
+  const res = await fetch(`${BASE_URL}/product/search/live/?q=${q}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) return [];
+
+  return res.json();
+}
+
+export async function searchProducts(q: string) {
+  const res = await fetch(`${BASE_URL}/product/search/?q=${q}`, {
+    cache: "no-store",
+  });
+
+  if (!res.ok) return { results: [] };
+
+  return res.json();
+}
+
+export async function getAllProducts(page: number = 1) {
   try {
-    const res = await fetch(`http://localhost:8000/product/${productId}/`, {
+    const res = await fetch(`${BASE_URL}/product/?page=${page}`, {
       cache: "no-store",
     });
 
-    if (!res.ok) throw new Error("Failed to fetch product");
+    if (!res.ok) return { results: [], count: 0, next: null, previous: null };
 
-    return await res.json();
+    const data = await res.json();
+    return data;
   } catch (err) {
-    console.error(err);
+    console.error("FETCH ERROR:", err);
+    return { results: [], count: 0, next: null, previous: null };
+  }
+}
+
+export async function getProduct(id: string) {
+  try {
+    const res = await fetch(`${BASE_URL}/product/${id}/`, { cache: 'no-store' }); 
+    if (!res.ok) return null;
+    
+    const data = await res.json();
+    return data.response; 
+  } catch (error) {
+    console.error("Fetch error:", error);
     return null;
   }
 }
