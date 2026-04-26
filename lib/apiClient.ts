@@ -16,7 +16,12 @@ export async function apiClient(
   const data = await res.json();
 
   if (!res.ok) {
-    throw new Error(data?.error || "Something went wrong");
+    // If Django returns {"specifications": ["..."]}, we want to see that.
+    const errorDetail = data && typeof data === 'object'
+      ? JSON.stringify(data)
+      : "Something went wrong";
+
+    throw new Error(data?.error || errorDetail);
   }
 
   return data;
