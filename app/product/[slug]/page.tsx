@@ -23,7 +23,7 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Breadcrumb */}
         <nav className="mb-8 flex items-center space-x-2 text-sm text-gray-500">
-          <Link href="/" className="hover:text-black">Shop</Link>
+          <Link href="/shop" className="hover:text-black">Shop</Link>
           <span>/</span>
           <span className="font-medium text-black">{product.name}</span>
         </nav>

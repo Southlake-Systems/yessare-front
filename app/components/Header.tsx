@@ -47,11 +47,11 @@ export default function Header() {
   }, []);
 
   const categories = [
+    "Air Compressors", 
+    "Cordless Tools", 
+    "Cleaning Tools",
     "Power Tools",
-    "Hand Tools",
-    "Cordless Tools",
-    "Safety Equipments",
-    "Home Tools",
+    "Welding Tools",
   ];
 
   return (
@@ -63,7 +63,7 @@ export default function Header() {
       <div className="max-w-full mx-auto px-10 flex items-center justify-between py-5 gap-4">
 
         {/* Logo */}
-        <Link href="/" className="shrink-0 flex items-center gap-3 hover:opacity-80 transition group">
+        <Link href="/shop" className="shrink-0 flex items-center gap-3 hover:opacity-80 transition group">
           <div className="relative w-12.5 h-10 md:w-17.5 md:h-12.5">
             <Image
               src="/logo.jpeg"
