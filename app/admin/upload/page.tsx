@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  ChevronLeft, Save, Plus, Trash2, Hash, Box, 
-  Info, DollarSign, List, Image as ImageIcon 
+import {
+  ChevronLeft, Save, Plus, Trash2, Hash, Box,
+  Info, DollarSign, List, Image as ImageIcon
 } from "lucide-react";
 import { useProduct } from "@/hooks/products/useProduct";
 import BrandSelect from "@/app/components/brand/BrandSelect";
@@ -29,14 +29,31 @@ export default function ProductEditor() {
   });
 
   const handleSave = async () => {
-    try {
-      await saveProduct(form);
-      router.push("/admin/products"); 
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    const payload = {
+      name: form.name,
+      brand: Number(form.brand),
+      description: form.description,
+      model_number: form.model_number,
+      stock: Number(form.stock),
+      category: form.category,
+      warranty: form.warranty,
+      price: {
+        mrp: Number(form.mrp || 0),
+        selling_price: Number(form.selling_price || 0),
+        discount_rate: Number(form.discount_rate || 0),
+      },
+      specifications: form.specs.filter(s => s.name && s.spec), 
+      features: form.features.filter(f => f.name),
+    };
 
+    await saveProduct(payload);
+    router.push("/admin/products");
+  } catch (err: any) {
+    console.error("Validation Error:", err);
+    // Log the actual response for easier debugging
+  }
+};
   return (
     <div className="min-h-screen bg-[#f4f6f8] text-sm text-slate-700">
       {/* SIMPLE COMPACT HEADER */}
@@ -57,10 +74,10 @@ export default function ProductEditor() {
       </header>
 
       <main className="p-6 max-w-7xl mx-auto grid grid-cols-12 gap-6">
-        
+
         {/* LEFT COLUMN: PRIMARY DETAILS */}
         <div className="col-span-12 lg:col-span-8 space-y-6">
-          
+
           <div className="bg-white border border-slate-300 shadow-sm">
             <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 font-bold flex items-center gap-2">
               <Info size={14} /> Basic Information
@@ -105,8 +122,8 @@ export default function ProductEditor() {
           <div className="bg-white border border-slate-300 shadow-sm">
             <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 font-bold flex items-center justify-between">
               <span className="flex items-center gap-2"><List size={14} /> Technical Specs</span>
-              <button 
-                onClick={() => setForm({...form, specs: [...form.specs, { name: "", spec: "" }]})}
+              <button
+                onClick={() => setForm({ ...form, specs: [...form.specs, { name: "", spec: "" }] })}
                 className="text-blue-600 text-xs font-bold hover:underline"
               >
                 + Add Row
@@ -124,25 +141,25 @@ export default function ProductEditor() {
                 {form.specs.map((s, i) => (
                   <tr key={i}>
                     <td className="p-2 border-b border-slate-100">
-                      <input 
-                        className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500" 
+                      <input
+                        className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500"
                         value={s.name}
                         onChange={(e) => {
-                          const n = [...form.specs]; n[i].name = e.target.value; setForm({...form, specs: n});
+                          const n = [...form.specs]; n[i].name = e.target.value; setForm({ ...form, specs: n });
                         }}
                       />
                     </td>
                     <td className="p-2 border-b border-slate-100">
-                      <input 
-                        className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500" 
+                      <input
+                        className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500"
                         value={s.spec}
                         onChange={(e) => {
-                          const n = [...form.specs]; n[i].spec = e.target.value; setForm({...form, specs: n});
+                          const n = [...form.specs]; n[i].spec = e.target.value; setForm({ ...form, specs: n });
                         }}
                       />
                     </td>
                     <td className="p-2 border-b border-slate-100">
-                      <button onClick={() => setForm({...form, specs: form.specs.filter((_, idx) => idx !== i)})} className="text-slate-400 hover:text-red-500">
+                      <button onClick={() => setForm({ ...form, specs: form.specs.filter((_, idx) => idx !== i) })} className="text-slate-400 hover:text-red-500">
                         <Trash2 size={14} />
                       </button>
                     </td>
@@ -155,7 +172,7 @@ export default function ProductEditor() {
 
         {/* RIGHT COLUMN: PRICING & INVENTORY */}
         <div className="col-span-12 lg:col-span-4 space-y-6">
-          
+
           <div className="bg-white border border-slate-300 shadow-sm">
             <div className="px-4 py-2 border-b border-slate-200 bg-slate-50 font-bold flex items-center gap-2">
               <DollarSign size={14} /> Pricing & Stock
@@ -163,38 +180,38 @@ export default function ProductEditor() {
             <div className="p-4 space-y-4">
               <div>
                 <label className="block font-semibold mb-1">MRP (₹)</label>
-                <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.mrp} onChange={(e) => setForm({...form, mrp: e.target.value})} />
+                <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.mrp} onChange={(e) => setForm({ ...form, mrp: e.target.value })} />
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block font-semibold mb-1 text-xs">Selling Price</label>
-                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.selling_price} onChange={(e) => setForm({...form, selling_price: e.target.value})} />
+                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.selling_price} onChange={(e) => setForm({ ...form, selling_price: e.target.value })} />
                 </div>
                 <div>
                   <label className="block font-semibold mb-1 text-xs">Discount %</label>
-                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.discount_rate} onChange={(e) => setForm({...form, discount_rate: e.target.value})} />
+                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.discount_rate} onChange={(e) => setForm({ ...form, discount_rate: e.target.value })} />
                 </div>
               </div>
               <hr className="border-slate-100" />
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="block font-semibold mb-1 text-xs text-orange-600">Stock Qty</label>
-                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.stock} onChange={(e) => setForm({...form, stock: Number(e.target.value)})} />
+                  <input type="number" className="w-full p-2 border border-slate-300 rounded" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label className="block font-semibold mb-1 text-xs">Warranty</label>
-                  <input type="text" className="w-full p-2 border border-slate-300 rounded" value={form.warranty} onChange={(e) => setForm({...form, warranty: e.target.value})} />
+                  <input type="text" className="w-full p-2 border border-slate-300 rounded" value={form.warranty} onChange={(e) => setForm({ ...form, warranty: e.target.value })} />
                 </div>
               </div>
               <div>
                 <label className="block font-semibold mb-1 text-xs">Model No.</label>
-                <input type="text" className="w-full p-2 border border-slate-300 rounded" value={form.model_number} onChange={(e) => setForm({...form, model_number: e.target.value})} />
+                <input type="text" className="w-full p-2 border border-slate-300 rounded" value={form.model_number} onChange={(e) => setForm({ ...form, model_number: e.target.value })} />
               </div>
             </div>
           </div>
 
           <div className="bg-white border border-slate-300 shadow-sm p-4">
-            <div className="font-bold mb-3 flex items-center gap-2"><ImageIcon size={14}/> Image Upload</div>
+            <div className="font-bold mb-3 flex items-center gap-2"><ImageIcon size={14} /> Image Upload</div>
             <label className="border-2 border-dashed border-slate-200 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition">
               <span className="text-blue-600 font-bold">Choose File</span>
               <span className="text-xs text-slate-400 mt-1">PNG, JPG up to 5MB</span>
