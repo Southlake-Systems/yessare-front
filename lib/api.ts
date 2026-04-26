@@ -159,12 +159,13 @@ export async function saveProduct(payload: any) {
       body: JSON.stringify(payload),
     });
 
+    const data = await res.json(); 
+
     if (!res.ok) {
-      console.error("SAVE ERROR:", res.status);
+      console.error("SAVE ERROR:", res.status, data);
       return null;
     }
 
-    const data = await res.json();
     return data;
   } catch (err) {
     console.error("SAVE ERROR:", err);

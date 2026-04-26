@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAllProducts, getProduct } from "@/lib/api";
+import { getAllProducts, getBrands, getProduct } from "@/lib/api";
 import { Plus, Edit3, Package } from "lucide-react";
 import Link from "next/link";
 
@@ -13,7 +13,10 @@ export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
-
+  const [brands, setBrands] = useState<any[]>([]);
+  useEffect(() => {
+    getBrands().then(setBrands);
+  }, []);
   // EDIT STATE
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
   const [editOpen, setEditOpen] = useState(false);
@@ -39,14 +42,15 @@ export default function AdminProductsPage() {
     const product = await getProduct(String(id));
     if (product) {
       setSelectedProduct(product);
-      // Initialize editData with existing values
       setEditData({
         id: product.id,
         name: product.name,
         selling_price: product.price?.selling_price,
         mrp: product.price?.mrp,
         description: product.description,
-        stock: product.stock
+        stock: product.stock,
+        brand: product.brand?.id,  
+        category: product.category,
       });
       setEditOpen(true);
     }
@@ -54,14 +58,38 @@ export default function AdminProductsPage() {
 
   const onSave = async () => {
     setLoading(true);
+
     try {
-      // editData already contains the 'id'
-      await saveProduct(editData);
+      const payload = {
+        product: {
+          id: editData.id,
+          name: editData.name,
+          description: editData.description,
+          stock: Number(editData.stock),
+
+          brand: Number(editData.brand), // MUST be valid ID
+          category: editData.category || "general",
+
+          price: {
+            mrp: Number(editData.mrp || 0),
+            selling_price: Number(editData.selling_price || 0),
+            discount_rate: 0,
+          },
+
+          specifications: [],
+          features: [],
+        },
+      };
+
+      console.log("FINAL PAYLOAD:", payload); // 👈 DEBUG
+
+      await saveProduct(payload);
+
       setEditOpen(false);
 
-      // Refresh the list
       const data = await getAllProducts(page);
       setProducts(data.results || []);
+
     } catch (error) {
       console.error("Failed to save:", error);
     } finally {
@@ -206,11 +234,25 @@ export default function AdminProductsPage() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl">
             <h2 className="text-xl font-bold mb-4">Edit Product (ID: {editData.id})</h2>
-
+            <label className="block text-xs font-medium text-gray-500">Brand</label>
+            <select
+              value={editData.brand || ""}
+              onChange={(e) =>
+                setEditData({ ...editData, brand: Number(e.target.value) })
+              }
+              className="w-full border p-2 rounded"
+            >
+              <option value="">Select Brand</option>
+              {brands.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.name}
+                </option>
+              ))}
+            </select>
             <div className="space-y-3">
               <label className="block text-xs font-medium text-gray-500">Product Name</label>
               <input
-                value={editData.name}
+                value={editData.name || ""}
                 onChange={(e) => setEditData({ ...editData, name: e.target.value })}
                 className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
               />
@@ -219,7 +261,7 @@ export default function AdminProductsPage() {
                 <div>
                   <label className="block text-xs font-medium text-gray-500">Selling Price</label>
                   <input
-                    value={editData.selling_price}
+                    value={editData.selling_price || ""}
                     onChange={(e) => setEditData({ ...editData, selling_price: e.target.value })}
                     className="w-full border p-2 rounded"
                   />
@@ -227,7 +269,7 @@ export default function AdminProductsPage() {
                 <div>
                   <label className="block text-xs font-medium text-gray-500">MRP</label>
                   <input
-                    value={editData.mrp}
+                    value={editData.mrp || ""}
                     onChange={(e) => setEditData({ ...editData, mrp: e.target.value })}
                     className="w-full border p-2 rounded"
                   />
@@ -236,14 +278,14 @@ export default function AdminProductsPage() {
 
               <label className="block text-xs font-medium text-gray-500">Stock</label>
               <input
-                value={editData.stock}
+                value={editData.stock || ""}
                 onChange={(e) => setEditData({ ...editData, stock: e.target.value })}
                 className="w-full border p-2 rounded"
               />
 
               <label className="block text-xs font-medium text-gray-500">Description</label>
               <textarea
-                value={editData.description}
+                value={editData.description || ""}
                 onChange={(e) => setEditData({ ...editData, description: e.target.value })}
                 className="w-full border p-2 rounded h-24"
               />
