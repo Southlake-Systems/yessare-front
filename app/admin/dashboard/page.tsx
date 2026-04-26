@@ -1,5 +1,5 @@
 // app/admin/dashboard/page.tsx
-import { products } from "@/data/product";
+
 import { 
   ArrowUpRight, 
   ArrowDownRight,
@@ -10,7 +10,7 @@ import Link from "next/link";
 
 export default function DashboardPage() {
   const stats = [
-    { label: "Total Products", value: products.length, trend: "+2", trendUp: true, color: "border-blue-500" },
+    { label: "Total Products", value: 0, trend: "+2", trendUp: true, color: "border-blue-500" },
     { label: "Orders", value: 12, trend: "+14%", trendUp: true, color: "border-orange-500" },
     { label: "Revenue", value: "₹24,500", trend: "+8%", trendUp: true, color: "border-emerald-500" },
     { label: "Customers", value: 8, trend: "-2%", trendUp: false, color: "border-purple-500" },

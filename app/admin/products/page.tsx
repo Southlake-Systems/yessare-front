@@ -1,134 +1,237 @@
 // app/admin/products/page.tsx
+"use client";
 
-import { products } from "@/data/product";
-import { Plus, Search, Filter, Edit3, Trash2, MoreVertical, Package } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getAllProducts, getProduct } from "@/lib/api";
+import { Plus, Edit3, Package } from "lucide-react";
 import Link from "next/link";
+import { saveProduct } from "@/lib/api";
+
 export default function AdminProductsPage() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  // EDIT STATE
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [editOpen, setEditOpen] = useState(false);
+
+  const PAGE_SIZE = 10;
+  const totalPages = Math.ceil(count / PAGE_SIZE);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      const data = await getAllProducts(page);
+      setProducts(data.results || []);
+      setCount(data.count || 0);
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [page]);
+
+  // 🔥 EDIT HANDLER
+  const handleEdit = async (id: number) => {
+    const product = await getProduct(String(id));
+    if (product) {
+      setSelectedProduct(product);
+      setEditOpen(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#fafafa] p-4 md:p-8">
-      
-     
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      {/* Header */}
+      <div className="flex justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-            Products
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Manage {products.length} items in your power tool catalog
-          </p>
+          <h1 className="text-3xl font-bold">Products</h1>
+          <p className="text-gray-500">Manage {count} items</p>
         </div>
-        
-        <Link 
+
+        <Link
           href="/admin/upload"
-          className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl font-semibold transition-all shadow-lg shadow-blue-600/20 active:scale-95"
+          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           Add Product
         </Link>
       </div>
 
+      {/* TABLE */}
+      <div className="bg-white rounded-xl border">
+        <table className="w-full">
+          <thead className="bg-gray-50 border-b">
+            <tr>
+              <th className="p-4 text-left text-xs">Product</th>
+              <th className="p-4 text-left text-xs">Category</th>
+              <th className="p-4 text-left text-xs">Price</th>
+              <th className="p-4 text-left text-xs">Status</th>
+              <th className="p-4 text-right text-xs">Actions</th>
+            </tr>
+          </thead>
 
-      <div className="bg-white p-4 rounded-xl border border-gray-200 mb-6 flex flex-col md:flex-row gap-4 shadow-sm">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input 
-            type="text"
-            placeholder="Search by name, product id or brand..."
-            className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all text-sm"
-          />
-        </div>
-        <button className="flex items-center justify-center gap-2 px-4 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 text-sm font-medium text-gray-600">
-          <Filter className="w-4 h-4" />
-          Filters
-        </button>
-      </div>
-
-      {/* --- Table Container --- */}
-      <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50/50 border-b border-gray-200">
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Product</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Price</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-xs font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={5} className="text-center p-6">
+                  Loading...
+                </td>
               </tr>
-            </thead>
+            ) : (
+              products.map((product: any) => (
+                <tr key={product.id} className="border-b hover:bg-gray-50">
+                  {/* PRODUCT */}
+                  <td className="p-4 flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                      {product.image ? (
+                        <img
+                          src={
+                            product.image.startsWith("http")
+                              ? product.image
+                              : `http://localhost:8000${product.image}`
+                          }
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Package className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
 
-            <tbody className="divide-y divide-gray-100">
-              {products.map((product) => (
-                <tr 
-                  key={product.id} 
-                  className="hover:bg-blue-50/30 transition-colors group"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-lg bg-gray-100 flex items-center justify-center border border-gray-200 overflow-hidden shrink-0">
-                    
-                        <Package className="w-6 h-6 text-gray-400" />
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
-                          {product.name}
-                        </div>
-                        <div className="text-xs text-gray-400 font-medium">
-                        {product.id.toUpperCase()}
-                        </div>
+                    <div>
+                      <div className="font-semibold">{product.name}</div>
+                      <div className="text-xs text-gray-400">
+                        ID: {product.id}
                       </div>
                     </div>
                   </td>
 
-                  {/* Category Tag */}
-                  <td className="px-6 py-4 text-sm text-gray-500 font-medium">
-                    <span className="bg-gray-100 px-2.5 py-1 rounded-md text-[11px] uppercase tracking-wide">
-                      Power Tools
-                    </span>
+                  {/* BRAND */}
+                  <td className="p-4 text-sm">
+                    {product.brand?.name || "Power Tools"}
                   </td>
 
-                  {/* Price */}
-                  <td className="px-6 py-4 text-sm font-bold text-gray-900">
-                    ₹{product.price.toLocaleString('en-IN')}
+                  {/* PRICE */}
+                  <td className="p-4 text-sm font-bold">
+                    ₹{product.price?.selling_price}
+
+                    {product.price?.mrp !== product.price?.selling_price && (
+                      <span className="ml-2 text-gray-400 line-through text-xs">
+                        ₹{product.price?.mrp}
+                      </span>
+                    )}
+
+                    {product.price?.discount_rate !== "0.00" && (
+                      <span className="ml-2 text-red-500 text-xs">
+                        {product.price?.discount_rate}% OFF
+                      </span>
+                    )}
                   </td>
 
-                  {/* Stock Status Badge */}
-                  <td className="px-6 py-4">
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-100">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  {/* STATUS */}
+                  <td className="p-4">
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded">
                       In Stock
                     </span>
                   </td>
 
-                  {/* Action Buttons */}
-                  <td className="px-6 py-4 text-right">
-                    <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit">
-                        <Edit3 className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all" title="Delete">
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+                  {/* ACTIONS */}
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={() => handleEdit(product.id)}
+                      className="p-2 hover:text-blue-600"
+                    >
+                      <Edit3 className="w-4 h-4" />
+                    </button>
                   </td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              ))
+            )}
+          </tbody>
+        </table>
 
-        {/* --- Pagination Placeholder --- */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
-          <p className="text-xs text-gray-500 font-medium">
-            Showing <span className="text-gray-900 font-bold">{products.length}</span> products
-          </p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 text-xs font-bold border border-gray-200 rounded-md bg-white hover:bg-gray-50 disabled:opacity-50">Previous</button>
-            <button className="px-3 py-1 text-xs font-bold border border-gray-200 rounded-md bg-white hover:bg-gray-50">Next</button>
-          </div>
+        {/* PAGINATION */}
+        <div className="flex justify-between items-center p-4">
+          <button
+            onClick={() => setPage((p) => p - 1)}
+            disabled={page === 1}
+            className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <span>
+            Page {page} / {totalPages || 1}
+          </span>
+
+          <button
+            onClick={() => setPage((p) => p + 1)}
+            disabled={page === totalPages || totalPages === 0}
+            className="px-3 py-1 bg-blue-600 text-white rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
 
+      {/* 🔥 EDIT MODAL */}
+      {editOpen && selectedProduct && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+
+            <input
+              defaultValue={selectedProduct.name}
+              className="w-full border p-2 mb-2 rounded"
+              placeholder="Name"
+            />
+
+            <input
+              defaultValue={selectedProduct.price?.selling_price}
+              className="w-full border p-2 mb-2 rounded"
+              placeholder="Selling Price"
+            />
+
+            <input
+              defaultValue={selectedProduct.price?.mrp}
+              className="w-full border p-2 mb-2 rounded"
+              placeholder="MRP"
+            />
+
+            <input
+              defaultValue={selectedProduct.brand?.name}
+              className="w-full border p-2 mb-2 rounded"
+              placeholder="Brand"
+            />
+
+            <textarea
+              defaultValue={selectedProduct.description}
+              className="w-full border p-2 mb-2 rounded"
+              placeholder="Description"
+            />
+
+            <input
+              defaultValue={selectedProduct.stock}
+              className="w-full border p-2 mb-2 rounded"
+              placeholder="Stock"
+            />
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setEditOpen(false)}
+                className="px-4 py-2 bg-gray-200 rounded"
+              >
+                Cancel
+              </button>
+
+              <button className="px-4 py-2 bg-blue-600 text-white rounded">
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

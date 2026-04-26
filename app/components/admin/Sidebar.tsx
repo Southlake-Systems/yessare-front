@@ -17,10 +17,10 @@ export default function Sidebar() {
   const navItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Products", path: "/admin/products", icon: Package },
-    { label: "View Brands", path: "/admin/view_brands", icon: Layers },
-    { label: "Add Brands", path: "/admin/add_brands", icon: PlusCircle },
-    { label: "Add Products", path: "/admin/upload", icon: Upload },
-    { label: "Offer Zone", path: "/admin/offer_section", icon: Tag }
+    { label: "Brands", path: "/admin/view_brands", icon: Layers },
+    // { label: "Add Brands", path: "/admin/add_brands", icon: PlusCircle },
+    // { label: "Add Products", path: "/admin/upload", icon: Upload },
+    { label: "Sections", path: "/admin/offer_section", icon: Tag }
   ];
 
   return (
@@ -31,7 +31,7 @@ export default function Sidebar() {
           Y
         </div>
         <span className="text-lg font-black uppercase tracking-tight text-slate-800">
-          Yesare Admin
+          Yessare Admin
         </span>
       </div>
 

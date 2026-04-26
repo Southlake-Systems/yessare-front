@@ -148,3 +148,26 @@ export async function getProduct(id: string) {
     return null;
   }
 }
+
+export async function saveProduct(payload: any) {
+  try {
+    const res = await fetch(`${BASE_URL}/product/add/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      console.error("SAVE ERROR:", res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error("SAVE ERROR:", err);
+    return null;
+  }
+}
