@@ -1,6 +1,7 @@
 import { apiClient } from "../lib/apiClient";
 
 export type ProductPayload = {
+  id?: number; // Optional for new products
   name: string;
   brand: string; // brand id
   description?: string;
@@ -14,8 +15,6 @@ export type ProductPayload = {
 export async function addOrUpdateProduct(product: ProductPayload) {
   return apiClient("/product/add/", {
     method: "POST",
-    body: JSON.stringify({
-      product,
-    }),
+    body: JSON.stringify(product),
   });
 }

@@ -32,13 +32,40 @@ export default function AdminProductsPage() {
 
     fetchData();
   }, [page]);
+  const [editData, setEditData] = useState<any>({});
 
-  // 🔥 EDIT HANDLER
+  // When opening the modal, set the initial form state
   const handleEdit = async (id: number) => {
     const product = await getProduct(String(id));
     if (product) {
       setSelectedProduct(product);
+      // Initialize editData with existing values
+      setEditData({
+        id: product.id,
+        name: product.name,
+        selling_price: product.price?.selling_price,
+        mrp: product.price?.mrp,
+        description: product.description,
+        stock: product.stock
+      });
       setEditOpen(true);
+    }
+  };
+
+  const onSave = async () => {
+    setLoading(true);
+    try {
+      // editData already contains the 'id'
+      await saveProduct(editData);
+      setEditOpen(false);
+
+      // Refresh the list
+      const data = await getAllProducts(page);
+      setProducts(data.results || []);
+    } catch (error) {
+      console.error("Failed to save:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -176,56 +203,65 @@ export default function AdminProductsPage() {
         </div>
       </div>
       {editOpen && selectedProduct && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-xl w-full max-w-md">
-            <h2 className="text-xl font-bold mb-4">Edit Product</h2>
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl">
+            <h2 className="text-xl font-bold mb-4">Edit Product (ID: {editData.id})</h2>
 
-            <input
-              defaultValue={selectedProduct.name}
-              className="w-full border p-2 mb-2 rounded"
-              placeholder="Name"
-            />
+            <div className="space-y-3">
+              <label className="block text-xs font-medium text-gray-500">Product Name</label>
+              <input
+                value={editData.name}
+                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
+                className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+              />
 
-            <input
-              defaultValue={selectedProduct.price?.selling_price}
-              className="w-full border p-2 mb-2 rounded"
-              placeholder="Selling Price"
-            />
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500">Selling Price</label>
+                  <input
+                    value={editData.selling_price}
+                    onChange={(e) => setEditData({ ...editData, selling_price: e.target.value })}
+                    className="w-full border p-2 rounded"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500">MRP</label>
+                  <input
+                    value={editData.mrp}
+                    onChange={(e) => setEditData({ ...editData, mrp: e.target.value })}
+                    className="w-full border p-2 rounded"
+                  />
+                </div>
+              </div>
 
-            <input
-              defaultValue={selectedProduct.price?.mrp}
-              className="w-full border p-2 mb-2 rounded"
-              placeholder="MRP"
-            />
+              <label className="block text-xs font-medium text-gray-500">Stock</label>
+              <input
+                value={editData.stock}
+                onChange={(e) => setEditData({ ...editData, stock: e.target.value })}
+                className="w-full border p-2 rounded"
+              />
 
-            <input
-              defaultValue={selectedProduct.brand?.name}
-              className="w-full border p-2 mb-2 rounded"
-              placeholder="Brand"
-            />
+              <label className="block text-xs font-medium text-gray-500">Description</label>
+              <textarea
+                value={editData.description}
+                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
+                className="w-full border p-2 rounded h-24"
+              />
+            </div>
 
-            <textarea
-              defaultValue={selectedProduct.description}
-              className="w-full border p-2 mb-2 rounded"
-              placeholder="Description"
-            />
-
-            <input
-              defaultValue={selectedProduct.stock}
-              className="w-full border p-2 mb-2 rounded"
-              placeholder="Stock"
-            />
-
-            <div className="flex justify-end gap-2 mt-4">
+            <div className="flex justify-end gap-2 mt-6">
               <button
                 onClick={() => setEditOpen(false)}
-                className="px-4 py-2 bg-gray-200 rounded"
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
               >
                 Cancel
               </button>
 
-              <button className="px-4 py-2 bg-blue-600 text-white rounded">
-                Save
+              <button
+                onClick={onSave}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
+              >
+                {loading ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
