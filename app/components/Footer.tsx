@@ -109,7 +109,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-bold uppercase tracking-[0.2em]">
           <p className="text-gray-500">© {currentYear} Yesare Tools. Precision Engineered.</p>
           <div className="flex gap-8">
-            <Link href="/privacy" className="hover:text-yellow-500 transition-colors">Privacy Policy</Link>
+            <Link href="/privacy-policy" className="hover:text-yellow-500 transition-colors">Privacy Policy</Link>
             <Link href="/terms" className="hover:text-yellow-500 transition-colors">Terms of Service</Link>
           </div>
         </div>
