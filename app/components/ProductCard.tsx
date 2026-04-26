@@ -47,10 +47,9 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Image */}
       <div className="relative w-full aspect-square bg-[#f9fafb] rounded-xl flex items-center justify-center overflow-hidden">
         {product.image ? (
-          <Image
+          <img
             src={imageUrl}
             alt={product.name}
-            fill
             sizes="(max-width: 768px) 100vw, 25vw"
             className="object-contain p-6 transition-transform duration-700 group-hover:scale-110"
           />
