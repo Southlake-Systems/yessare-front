@@ -6,6 +6,8 @@ import { getAllProducts, getProduct } from "@/lib/api";
 import { Plus, Edit3, Package } from "lucide-react";
 import Link from "next/link";
 
+import { saveProduct } from "@/lib/api";
+
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -173,7 +175,6 @@ export default function AdminProductsPage() {
           </button>
         </div>
       </div>
-
       {editOpen && selectedProduct && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
           <div className="bg-white p-6 rounded-xl w-full max-w-md">
