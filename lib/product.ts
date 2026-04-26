@@ -1,5 +1,24 @@
 import { apiClient } from "./apiClient";
-export async function addOrUpdateProduct(form: any) {
+export type ProductPayload = {
+  id?: number;
+  name: string;
+  brand: number;
+  description: string;
+  model_number?: string;
+  stock: number;
+  category: string;
+  warranty?: string;
+
+  price: {
+    mrp: number;
+    selling_price: number;
+    discount_rate: number;
+  };
+
+  specifications: { name: string; spec: string }[];
+  features: { name: string }[];
+};
+export async function addOrUpdateProduct(form: ProductPayload) {
   const payload = {
     id: form.id,
     name: form.name,
@@ -11,15 +30,17 @@ export async function addOrUpdateProduct(form: any) {
     warranty: form.warranty,
 
     price: {
-      mrp: Number(form.mrp || 0),
-      selling_price: Number(form.selling_price || 0),
-      discount_rate: Number(form.discount_rate || 0),
+      mrp: Number(form.price?.mrp || 0),
+      selling_price: Number(form.price?.selling_price || 0),
+      discount_rate: Number(form.price?.discount_rate || 0),
     },
 
-    specifications: form.specs?.filter((s: any) => s.name && s.spec) || [],
-    features: form.features?.filter((f: any) => f.name) || [],
-  };
+    specifications:
+      form.specifications?.filter((s) => s.name && s.spec) || [],
 
+    features:
+      form.features?.filter((f) => f.name) || [],
+  };
 
   return apiClient("/product/add/", {
     method: "POST",
