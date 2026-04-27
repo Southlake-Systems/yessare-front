@@ -42,19 +42,19 @@ export default function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-10 text-white">
-          <Link 
+          {/* <Link 
             href="/contact" 
             className="text-sm font-bold uppercase tracking-wider hover:text-yellow-400 transition"
           >
             Contact Us
-          </Link>
+          </Link> */}
           
-          <Link 
+          {/* <Link 
             href="/shop" 
             className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-2.5 rounded-full text-sm font-bold transition-all duration-300"
           >
             Shop Now
-          </Link>
+          </Link> */}
         </div>
 
         {/* Mobile Menu Button */}
@@ -71,21 +71,21 @@ export default function Header() {
             isOpen ? "translate-y-0" : "-translate-y-full"
           } md:hidden flex flex-col items-center justify-center gap-8 z-40`}
         >
-          <Link 
+          {/* <Link 
             href="/contact" 
             onClick={() => setIsOpen(false)}
             className="text-2xl font-bold uppercase tracking-widest text-white"
           >
             Contact Us
-          </Link>
+          </Link> */}
 
-          <Link 
+          {/* <Link 
             href="/shop" 
             onClick={() => setIsOpen(false)}
             className="bg-blue-500 text-white px-10 py-4 rounded-full text-lg font-black uppercase shadow-lg"
           >
             Shop Now
-          </Link>
+          </Link> */}
         </div>
       </div>
     </header>

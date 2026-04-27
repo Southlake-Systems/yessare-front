@@ -43,8 +43,8 @@ export default function Footer() {
             Engineered for precision. Built for power. Kerala's leading supplier of industrial grade tools for the modern professional.
           </p>
           <div className="flex gap-3">
-            <SocialIcon icon={<IconBrandFacebook size={20} />} href="#" />
-            <SocialIcon icon={<IconBrandInstagram size={20} />} href="#" />
+            <SocialIcon icon={<IconBrandFacebook size={20} />} href="https://www.facebook.com/YESSAREPOWERTOOLS61/" />
+            <SocialIcon icon={<IconBrandInstagram size={20} />} href="https://www.instagram.com/yessaretools/reels/" />
             <SocialIcon icon={<IconBrandWhatsapp size={20} />} href="#" />
           </div>
         </div>

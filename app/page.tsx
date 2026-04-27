@@ -71,14 +71,14 @@ export default async function Home() {
             One-stop destination for all your tool needs with a wide multibrand collection, best pricing, and trusted service.
           </p>
 
-          <div className="flex flex-col sm:flex-row gap-6">
+          {/* <div className="flex flex-col sm:flex-row gap-6">
             <a
               href="/shop"
               className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-10 py-5 rounded-full font-bold transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
             >
               Shop Now
             </a>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -117,12 +117,12 @@ export default async function Home() {
         What We <span className="text-yellow-500">Offer</span>
       </h2>
     </div>
-    <Link 
+    {/* <Link 
       href="/shop" 
       className="text-slate-900 font-bold border-b-2 border-yellow-400 pb-1 hover:text-yellow-600 transition-colors"
     >
       View All Categories →
-    </Link>
+    </Link> */}
   </div>
 
   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8 max-w-7xl mx-auto">
@@ -409,18 +409,18 @@ export default async function Home() {
             Visit our supermarket or browse our online catalog for the best deals.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-6">
-            <Link
+            {/* <Link
               href="/shop"
               className="inline-block bg-black text-white px-12 py-5 rounded-full font-bold text-lg hover:bg-gray-900 hover:scale-105 transition-all duration-300 shadow-xl hover:shadow-2xl"
             >
               Shop Now
-            </Link>
-            <Link
+            </Link> */}
+            {/* <Link
               href="/contact"
               className="inline-block bg-transparent border-2 border-black text-black px-12 py-5 rounded-full font-bold text-lg hover:bg-black hover:text-white transition-all duration-300"
             >
               Contact Us
-            </Link>
+            </Link> */}
           </div>
         </div>
       </section>
