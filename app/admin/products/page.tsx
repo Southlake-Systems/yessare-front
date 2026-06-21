@@ -8,17 +8,37 @@ import Link from "next/link";
 
 import { saveProduct } from "@/lib/api";
 
+type Brand = {
+  id: number;
+  name: string;
+};
+
+type Product = {
+  id: number;
+  name: string;
+  price?: {
+    selling_price: number;
+    mrp: number;
+  };
+  description?: string;
+  stock?: number;
+  brand?: string | number;
+  category?: string;
+  selling_price?: number;
+  mrp?: number;
+};
+
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [brands, setBrands] = useState<any[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   useEffect(() => {
     getBrands().then(setBrands);
   }, []);
   // EDIT STATE
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editOpen, setEditOpen] = useState(false);
 
   const PAGE_SIZE = 10;
@@ -35,7 +55,7 @@ export default function AdminProductsPage() {
 
     fetchData();
   }, [page]);
-  const [editData, setEditData] = useState<any>({});
+  const [editData, setEditData] = useState<Partial<Product>>({});
 
   // When opening the modal, set the initial form state
   const handleEdit = async (id: number) => {
@@ -262,7 +282,7 @@ export default function AdminProductsPage() {
                   <label className="block text-xs font-medium text-gray-500">Selling Price</label>
                   <input
                     value={editData.selling_price || ""}
-                    onChange={(e) => setEditData({ ...editData, selling_price: e.target.value })}
+                    onChange={(e) => setEditData({ ...editData, selling_price: Number(e.target.value) })}
                     className="w-full border p-2 rounded"
                   />
                 </div>
@@ -270,7 +290,7 @@ export default function AdminProductsPage() {
                   <label className="block text-xs font-medium text-gray-500">MRP</label>
                   <input
                     value={editData.mrp || ""}
-                    onChange={(e) => setEditData({ ...editData, mrp: e.target.value })}
+                    onChange={(e) => setEditData({ ...editData, mrp: Number(e.target.value) })}
                     className="w-full border p-2 rounded"
                   />
                 </div>
@@ -279,7 +299,7 @@ export default function AdminProductsPage() {
               <label className="block text-xs font-medium text-gray-500">Stock</label>
               <input
                 value={editData.stock || ""}
-                onChange={(e) => setEditData({ ...editData, stock: e.target.value })}
+                onChange={(e) => setEditData({ ...editData, stock: Number(e.target.value) })}
                 className="w-full border p-2 rounded"
               />
 

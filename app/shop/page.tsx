@@ -5,7 +5,7 @@ import Hero from "@/app/components/Hero";
 import Section from "@/app/components/Section";
 import { getBrands, getHomeSections } from "@/lib/api";
 
-export default  async function Shop() {
+export default async function Shop() {
   const brands = await getBrands();
   const sections = await getHomeSections();
 
@@ -15,19 +15,20 @@ export default  async function Shop() {
       <Hero />
 
       <div className="mx-auto px-4 space-y-8 pb-10">
-        
+
         <BrandSection brands={brands} />
 
-        
+
         {sections.map((section: any) => (
           <Section
             key={section.id}
+            sectionId={section.id}
             title={section.title}
             items={section.products}
             type="product"
           />
         ))}
-        
+
       </div>
 
       <Footer />

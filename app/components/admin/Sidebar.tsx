@@ -17,7 +17,7 @@ export default function Sidebar() {
   const navItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
     { label: "Products", path: "/admin/products", icon: Package },
-    { label: "Brands", path: "/admin/view_brands", icon: Layers },
+    { label: "Brands", path: "/admin/brands/view_brands", icon: Layers },
     // { label: "Add Brands", path: "/admin/add_brands", icon: PlusCircle },
     // { label: "Add Products", path: "/admin/upload", icon: Upload },
     { label: "Sections", path: "/admin/offer_section", icon: Tag }

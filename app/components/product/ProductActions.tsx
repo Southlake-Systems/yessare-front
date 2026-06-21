@@ -1,6 +1,15 @@
 // components/product/ProductActions.tsx
+type Product = {
+  id: string | number;
+  name: string;
+  price?: number | null;
+  originalPrice?: number | null;
+  image?: string | null;
+  brand?: string;
+};
+
 type Props = {
-  product: any;
+  product: Product;
 };
 
 export default function ProductActions({ product }: Props) {

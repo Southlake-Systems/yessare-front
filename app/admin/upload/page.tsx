@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useProduct } from "@/hooks/products/useProduct";
 import BrandSelect from "@/app/components/brand/BrandSelect";
+import { uploadProductImage } from "@/lib/api";
 
 export default function ProductEditor() {
   const { saveProduct, loading, error } = useProduct();
@@ -24,36 +25,74 @@ export default function ProductEditor() {
     mrp: "",
     selling_price: "",
     discount_rate: "",
+    image: null as File | null,
     specs: [{ name: "", spec: "" }],
     features: [{ name: "" }]
   });
 
   const handleSave = async () => {
-  try {
-    const payload = {
-      name: form.name,
-      brand: Number(form.brand),
-      description: form.description,
-      model_number: form.model_number,
-      stock: Number(form.stock),
-      category: form.category,
-      warranty: form.warranty,
-      price: {
-        mrp: Number(form.mrp || 0),
-        selling_price: Number(form.selling_price || 0),
-        discount_rate: Number(form.discount_rate || 0),
-      },
-      specifications: form.specs.filter(s => s.name && s.spec), 
-      features: form.features.filter(f => f.name),
-    };
+    // Validate required fields
+    if (!form.name.trim()) {
+      alert("Product name is required");
+      return;
+    }
+    if (!form.brand) {
+      alert("Brand is required");
+      return;
+    }
+    if (!form.category.trim()) {
+      alert("Category is required");
+      return;
+    }
+    if (!form.mrp || Number(form.mrp) <= 0) {
+      alert("MRP must be greater than 0");
+      return;
+    }
 
-    await saveProduct(payload);
-    router.push("/admin/products");
-  } catch (err: any) {
-    console.error("Validation Error:", err);
-    // Log the actual response for easier debugging
-  }
-};
+    try {
+      const payload = {
+        name: form.name,
+        brand: Number(form.brand),
+        description: form.description,
+        model_number: form.model_number,
+        stock: Number(form.stock),
+        category: form.category,
+        warranty: form.warranty,
+        price: {
+          mrp: Number(form.mrp || 0),
+          selling_price: Number(form.selling_price || 0),
+          discount_rate: Number(form.discount_rate || 0),
+        },
+        specifications: form.specs.filter(s => s.name && s.spec),
+        features: form.features.filter(f => f.name),
+      };
+
+      const result = await saveProduct(payload);
+
+      if (result?.product_id && form.image) {
+
+        const formData = new FormData();
+
+        formData.append(
+          "product_id",
+          result.product_id
+        );
+
+        formData.append(
+          "image",
+          form.image
+        );
+
+        await uploadProductImage(formData);
+      }
+
+      alert("Product saved successfully!");
+      router.push("/admin/products");
+    } catch (err: any) {
+      console.error("Validation Error:", err);
+      alert(`Error saving product: ${err.message || "Unknown error"}`);
+    }
+  };
   return (
     <div className="min-h-screen bg-[#f4f6f8] text-sm text-slate-700">
       {/* SIMPLE COMPACT HEADER */}
@@ -139,7 +178,7 @@ export default function ProductEditor() {
               </thead>
               <tbody>
                 {form.specs.map((s, i) => (
-                  <tr key={i}>
+                  <tr key={`spec-${i}`}>
                     <td className="p-2 border-b border-slate-100">
                       <input
                         className="w-full p-1 border border-transparent hover:border-slate-200 focus:border-blue-500"
@@ -215,7 +254,23 @@ export default function ProductEditor() {
             <label className="border-2 border-dashed border-slate-200 p-8 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 transition">
               <span className="text-blue-600 font-bold">Choose File</span>
               <span className="text-xs text-slate-400 mt-1">PNG, JPG up to 5MB</span>
-              <input type="file" className="hidden" />
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+
+                  if (!file) return;
+
+                  setForm({
+                    ...form,
+                    image: file
+                  });
+
+                  console.log(file);
+                }}
+              />
             </label>
           </div>
 

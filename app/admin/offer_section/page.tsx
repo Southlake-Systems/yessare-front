@@ -2,15 +2,116 @@
 
 import { useEffect, useState } from "react";
 import { Plus, LayoutGrid, Package, Search, CheckCircle2, ListPlus, Loader2 } from "lucide-react";
+import {
+  DndContext,
+  closestCenter,
+} from "@dnd-kit/core";
+import { Trash2 } from "lucide-react";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+  arrayMove,
+} from "@dnd-kit/sortable";
 
-const BASE_URL = "http://localhost:8000";
+import { CSS } from "@dnd-kit/utilities";
 
+import { GripVertical } from "lucide-react";
+const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+
+type Section = {
+  id: number;
+  title: string;
+  products: Product[];
+};
+
+type Product = {
+  id: number;
+  name: string;
+  price?: number;
+  image?: string;
+};
+function SortableSection({
+  section,
+  selectedSection,
+  setSelectedSection,
+}: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({
+    id: section.id,
+  });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`px-4 py-3 rounded-xl border transition-all flex justify-between items-center cursor-pointer ${selectedSection === section.id
+        ? "bg-blue-50 border-blue-200 text-blue-700"
+        : "bg-white border-slate-100"
+        }`}
+      onClick={() => setSelectedSection(section.id)}
+    >
+      <div className="flex items-center gap-2">
+        <div
+          {...attributes}
+          {...listeners}
+          className="cursor-grab"
+        >
+          <GripVertical size={16} />
+        </div>
+
+        <span className="font-semibold">
+          {section.title}
+        </span>
+      </div>
+
+      <div className="flex items-center gap-2">
+
+        {selectedSection === section.id && (
+          <CheckCircle2 size={16} />
+        )}
+
+        <button
+          onClick={async (e) => {
+            e.stopPropagation();
+
+            if (!confirm("Delete section?"))
+              return;
+
+            await fetch(
+              `${BASE_URL}/home/sections/delete/${section.id}/`,
+              {
+                method: "DELETE",
+              }
+            );
+
+            window.location.reload();
+          }}
+          className="text-red-500 hover:text-red-700"
+        >
+          <Trash2 size={16} />
+        </button>
+
+      </div>
+    </div>
+  );
+}
 export default function OfferSectionPage() {
   const [title, setTitle] = useState("");
   const [order, setOrder] = useState(1);
-  const [sections, setSections] = useState<any[]>([]);
+  const [sections, setSections] = useState<Section[]>([]);
   const [selectedSection, setSelectedSection] = useState<number | null>(null);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,14 +125,56 @@ export default function OfferSectionPage() {
       }
     }
   }, [selectedSection, sections]);
+  const handleDragEnd = async (event: any) => {
+    const { active, over } = event;
 
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = sections.findIndex(
+      (s) => s.id === active.id
+    );
+
+    const newIndex = sections.findIndex(
+      (s) => s.id === over.id
+    );
+
+    const newSections = arrayMove(
+      sections,
+      oldIndex,
+      newIndex
+    );
+
+    setSections(newSections);
+
+    try {
+      await fetch(
+        `${BASE_URL}/home/sections/reorder/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            sections: newSections.map(
+              (section, index) => ({
+                id: section.id,
+                order: index + 1,
+              })
+            ),
+          }),
+        }
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const updateSectionContent = async () => {
     if (!selectedSection) return;
 
     setLoading(true);
     try {
       const res = await fetch(`${BASE_URL}/home/sections/update/${selectedSection}/`, {
-        method: "PUT", // Use PUT for updates
+        method: "PATCH", // Use PATCH for updates
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           product_ids: selectedProducts,
@@ -55,23 +198,35 @@ export default function OfferSectionPage() {
   const fetchSections = async () => {
     try {
       const res = await fetch(`${BASE_URL}/home/all/`);
+      if (!res.ok) {
+        console.error("Error fetching sections:", res.status);
+        return;
+      }
       const data = await res.json();
       setSections(data);
     } catch (err) {
       console.error("Error fetching sections:", err);
     }
   };
-
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/home/all/`);
+      const res = await fetch(`${BASE_URL}/product/`);
+
+      if (!res.ok) return;
+
       const data = await res.json();
-      setProducts(data.response || []);
+
+      setProducts(data.results || data.response || []);
     } catch (err) {
-      console.error("Error fetching products:", err);
+      console.error(err);
     }
   };
 
+  useEffect(() => {
+    if (selectedSection) {
+      fetchProducts();
+    }
+  }, [selectedSection]);
   // --- LIVE SEARCH ---
   useEffect(() => {
     if (searchTerm.trim() === "") {
@@ -84,6 +239,10 @@ export default function OfferSectionPage() {
       setIsSearching(true);
       try {
         const res = await fetch(`${BASE_URL}/product/search/live/?q=${encodeURIComponent(searchTerm)}`);
+        if (!res.ok) {
+          console.error("Error fetching search results:", res.status);
+          return;
+        }
         const data = await res.json();
         setProducts(data);
       } catch (error) {
@@ -121,7 +280,7 @@ export default function OfferSectionPage() {
     }
   };
 
-  
+
   const addProducts = async () => {
     if (!selectedSection || selectedProducts.length === 0) {
       alert("Please select a section and at least one product.");
@@ -196,19 +355,31 @@ export default function OfferSectionPage() {
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <LayoutGrid size={20} className="text-blue-600" /> Existing Sections
             </h2>
-            <div className="space-y-2">
-              {sections.map((sec) => (
-                <button
-                  key={sec.id}
-                  onClick={() => setSelectedSection(sec.id)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border transition-all flex justify-between items-center ${selectedSection === sec.id ? "bg-blue-50 border-blue-200 text-blue-700 ring-1 ring-blue-200" : "bg-white border-slate-100 hover:border-slate-300"
-                    }`}
-                >
-                  <span className="font-semibold">{sec.title}</span>
-                  {selectedSection === sec.id && <CheckCircle2 size={16} />}
-                </button>
-              ))}
-            </div>
+            <DndContext
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={sections.map((s) => s.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-2">
+                  {sections.map((section) => (
+                    <SortableSection
+                      key={section.id}
+                      section={section}
+                      selectedSection={selectedSection}
+                      setSelectedSection={
+                        setSelectedSection
+                      }
+
+                    />
+
+                  ))}
+
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
         </div>
 
@@ -275,7 +446,7 @@ export default function OfferSectionPage() {
                   {selectedProducts.length} items selected
                 </span>
                 <button
-                  onClick={addProducts}
+                  onClick={updateSectionContent}
                   disabled={loading || selectedProducts.length === 0}
                   className="flex items-center gap-2 bg-[#005bae] text-white px-8 py-3 rounded-xl font-bold hover:bg-blue-700 disabled:opacity-50 transition-all active:scale-95"
                 >

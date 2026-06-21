@@ -3,7 +3,7 @@
 import { apiClient } from "../lib/apiClient";
 
 
-export const BASE_URL = "http://localhost:8000";
+export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 // lib/api.ts
 export async function getBrands() {
@@ -42,7 +42,21 @@ export async function getProductsByBrand(brandId: number) {
     }
 
     const data = await res.json();
-    return data.response || [];
+    const products = data.response || [];
+
+    // Transform products to have proper price fields
+    return products.map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      price: p.price?.selling_price ?? p.price ?? 0,
+      originalPrice: p.price?.mrp ?? 0,
+      image: p.image
+        ? p.image.startsWith("http")
+          ? p.image
+          : `${BASE_URL}${p.image}`
+        : "/1.png",
+      brand: p.brand?.name ?? "",
+    }));
   } catch (err) {
     console.error("FETCH ERROR:", err);
     return [];
@@ -76,8 +90,13 @@ export async function getHomeSections() {
     cache: "no-store",
   });
 
-  const data = await res.json();
+  if (!res.ok) {
+    console.error("Failed to fetch sections:", res.status);
+    return [];
+  }
 
+  const data = await res.json();
+  if (!Array.isArray(data)) return [];
 
   return data.map((section: any) => ({
     id: section.id,
@@ -85,7 +104,8 @@ export async function getHomeSections() {
     products: section.products.map((p: any) => ({
       id: p.id,
       name: p.name,
-      price: p.price ?? 0,
+      price: p.price?.selling_price ?? p.price ?? 0,
+      originalPrice: p.price?.mrp ?? 0,
       image: p.image
         ? p.image.startsWith("http")
           ? p.image
@@ -171,4 +191,80 @@ export async function saveProduct(payload: any) {
     console.error("SAVE ERROR:", err);
     return null;
   }
+}
+
+
+export async function deleteBrand(id: number) {
+  const res = await fetch(
+    `${BASE_URL}/brand/${id}/delete/`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  return res.json();
+}
+
+export async function updateBrand(
+  id: number,
+  data: {
+    name?: string;
+    description?: string;
+    image?: File;
+  }
+) {
+  const formData = new FormData();
+
+  if (data.name)
+    formData.append("name", data.name);
+
+  if (data.description)
+    formData.append("description", data.description);
+
+  if (data.image)
+    formData.append("image_original", data.image);
+
+  const res = await fetch(
+    `${BASE_URL}/brand/${id}/update/`,
+    {
+      method: "PUT",
+      body: formData,
+    }
+  );
+
+  return res.json();
+}
+
+export async function getBrand(id: string) {
+  return apiClient(`/brand/${id}/`);
+}
+
+export async function getSectionProducts(
+  sectionId: string
+) {
+  const res = await fetch(
+    `${BASE_URL}/home/sections/${sectionId}/products/`,
+    {
+      cache: "no-store",
+    }
+  );
+
+  console.log(res.url);
+  console.log(res.status);
+
+  return res.json();
+}
+
+export async function uploadProductImage(
+  formData: FormData
+) {
+  const res = await fetch(
+    `${BASE_URL}/product/image/upload/`,
+    {
+      method: "POST",
+      body: formData,
+    }
+  );
+
+  return await res.json();
 }

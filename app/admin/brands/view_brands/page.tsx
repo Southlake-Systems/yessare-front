@@ -1,6 +1,7 @@
 import { getBrands } from "@/lib/api";
 import { Edit2, Trash2, Plus, ExternalLink } from "lucide-react"; // Optional: Install lucide-react
 import Link from "next/link";
+import DeleteBrandButton from "@/app/components/buttons/DeleteBrandButton";
 export default async function BrandsPage() {
     const brands = await getBrands();
 
@@ -47,12 +48,12 @@ export default async function BrandsPage() {
 
                                 {/* Hover Actions */}
                                 <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                    <button className="p-2 bg-white rounded-full shadow-sm hover:text-blue-600 transition-colors">
-                                        <Edit2 size={16} />
-                                    </button>
-                                    <button className="p-2 bg-white rounded-full shadow-sm hover:text-red-600 transition-colors">
-                                        <Trash2 size={16} />
-                                    </button>
+                                    <Link href={`/admin/brands/edit_brand/${brand.id}`}>
+                                        <button className="p-2 bg-white rounded-full shadow-sm hover:text-blue-600">
+                                            <Edit2 size={16} />
+                                        </button>
+                                    </Link>
+                                    <DeleteBrandButton id={brand.id} />
                                 </div>
                             </div>
 

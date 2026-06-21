@@ -10,10 +10,14 @@ export function useProduct() {
     try {
       setLoading(true);
       setError(null);
+      console.log("📤 Sending product:", product);
       const res = await addOrUpdateProduct(product);
+      console.log("✅ Product saved:", res);
       return res;
     } catch (err: any) {
-      setError(err.message);
+      const errorMsg = err.message || "Failed to save product";
+      console.error("❌ Error saving product:", err);
+      setError(errorMsg);
       throw err;
     } finally {
       setLoading(false);

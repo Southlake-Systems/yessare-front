@@ -29,7 +29,7 @@ export default function ProductCard({ product }: { product: Product }) {
     : "/placeholder.png";
 
   const discount =
-    product.originalPrice && price > 0
+    product.originalPrice && product.originalPrice > 0 && price > 0
       ? Math.round(((product.originalPrice - price) / product.originalPrice) * 100)
       : null;
 

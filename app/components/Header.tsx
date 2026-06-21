@@ -10,11 +10,16 @@ import Link from "next/link";
 import { ShoppingCart, User, Package, Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+type SearchResult = {
+  id: number;
+  name: string;
+};
+
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+  const [suggestions, setSuggestions] = useState<SearchResult[]>([]);
   const router = useRouter();
 
   const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,9 +27,13 @@ export default function Header() {
     setQuery(value);
 
     if (value.length >= 2) {
-      const data = await liveSearch(value);
-      // Limit to 7 results here
-      setSuggestions(data.slice(0, 7));
+      try {
+        const data = await liveSearch(value);
+        setSuggestions(Array.isArray(data) ? data.slice(0, 7) : []);
+      } catch (error) {
+        console.error("Search error:", error);
+        setSuggestions([]);
+      }
     } else {
       setSuggestions([]);
     }

@@ -42,10 +42,18 @@ export async function addOrUpdateProduct(form: ProductPayload) {
       form.features?.filter((f) => f.name) || [],
   };
 
-  return apiClient("/product/add/", {
-    method: "POST",
-    body: JSON.stringify({
-      product: payload,
-    }),
-  });
+  const requestBody = { product: payload };
+  console.log("📡 API Request to /product/add/:", requestBody);
+
+  try {
+    const res = await apiClient("/product/add/", {
+      method: "POST",
+      body: JSON.stringify(requestBody),
+    });
+    console.log("✅ API Response:", res);
+    return res;
+  } catch (error: any) {
+    console.error("❌ API Error:", error);
+    throw error;
+  }
 }
