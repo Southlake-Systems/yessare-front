@@ -1,39 +1,59 @@
 "use client"; // Required if using useState in Next.js App Router
 import { useState } from "react";
+import { BASE_URL } from "@/lib/api";
 
 type Props = {
   product: {
     name: string;
-    image: string | null;
-    // Add other fields if needed for the gallery
+    // The API returns either a single image path (string), an array of
+    // image objects ({ id, url|original }), or nothing.
+    image: string | { id?: number; url?: string; original?: string }[] | null;
   };
 };
 
+function resolveUrl(url: string) {
+  return url.startsWith("http") ? url : `${BASE_URL}${url}`;
+}
+
+function getImageUrls(image: Props["product"]["image"]): string[] {
+  if (!image) return [];
+  if (typeof image === "string") return [resolveUrl(image)];
+  return image
+    .map((img) => img.url ?? img.original ?? "")
+    .filter(Boolean)
+    .map(resolveUrl);
+}
+
 export default function ProductGallery({ product }: Props) {
-  // Use the API image as the default
-  const [selectedImage, setSelectedImage] = useState(product.image);
+  const images = getImageUrls(product.image);
+
+  // Use the first API image as the default
+  const [selectedImage, setSelectedImage] = useState<string | null>(images[0] ?? null);
 
   // Fallback if no image is provided by API
   const placeholder = "https://via.placeholder.com/600x600?text=No+Image+Available";
 
   return (
     <div className="flex flex-col-reverse md:flex-row gap-4">
-      
-      {/* Thumbnails - Currently showing API image + placeholders */}
+
+      {/* Thumbnails */}
       <div className="flex md:flex-col gap-3">
-        {product.image ? (
-          <button
-            onClick={() => setSelectedImage(product.image)}
-            className={`w-16 h-16 rounded-lg border-2 overflow-hidden transition-all ${
-              selectedImage === product.image ? "border-blue-600 shadow-md" : "border-gray-200 hover:border-blue-300"
-            }`}
-          >
-            <img 
-              src={product.image} 
-              alt="Thumbnail" 
-              className="w-full h-full object-cover" 
-            />
-          </button>
+        {images.length > 0 ? (
+          images.map((url) => (
+            <button
+              key={url}
+              onClick={() => setSelectedImage(url)}
+              className={`w-16 h-16 rounded-lg border-2 overflow-hidden transition-all ${
+                selectedImage === url ? "border-blue-600 shadow-md" : "border-gray-200 hover:border-blue-300"
+              }`}
+            >
+              <img
+                src={url}
+                alt="Thumbnail"
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))
         ) : (
           <div className="text-gray-400 text-[10px] text-center w-16">No Thumbs</div>
         )}

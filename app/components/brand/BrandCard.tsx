@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type Brand = {
   id: number;
   name: string;
@@ -8,7 +10,7 @@ type Brand = {
 
 export default function BrandCard({ brand }: { brand: Brand }) {
   return (
-    <div className="group cursor-pointer">
+    <Link href={`/brands/${brand.id}/product`} className="group cursor-pointer block">
       {/* Logo Container */}
       <div className="relative aspect-3/2 overflow-hidden rounded-xl border border-gray-100 bg-white  transition-all duration-300 ease-in-out ">
         <div className="flex h-full w-full items-center justify-center transition-transform duration-300 ">
@@ -32,6 +34,6 @@ export default function BrandCard({ brand }: { brand: Brand }) {
           {brand.name}
         </h3>
       </div>
-    </div>
+    </Link>
   );
 }

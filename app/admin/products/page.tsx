@@ -2,16 +2,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAllProducts, getBrands, getProduct } from "@/lib/api";
-import { Plus, Edit3, Package } from "lucide-react";
+import { getAllProducts, deleteProduct } from "@/lib/api";
+import { Plus, Edit3, Package, Trash2 } from "lucide-react";
 import Link from "next/link";
-
-import { saveProduct } from "@/lib/api";
-
-type Brand = {
-  id: number;
-  name: string;
-};
 
 type Product = {
   id: number;
@@ -19,13 +12,11 @@ type Product = {
   price?: {
     selling_price: number;
     mrp: number;
+    discount_rate?: string;
   };
-  description?: string;
   stock?: number;
-  brand?: string | number;
-  category?: string;
-  selling_price?: number;
-  mrp?: number;
+  brand?: { name: string } | string | number;
+  image?: string;
 };
 
 export default function AdminProductsPage() {
@@ -33,87 +24,30 @@ export default function AdminProductsPage() {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [brands, setBrands] = useState<Brand[]>([]);
-  useEffect(() => {
-    getBrands().then(setBrands);
-  }, []);
-  // EDIT STATE
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
-  const [editOpen, setEditOpen] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
 
   const PAGE_SIZE = 10;
   const totalPages = Math.ceil(count / PAGE_SIZE);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      const data = await getAllProducts(page);
-      setProducts(data.results || []);
-      setCount(data.count || 0);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, [page]);
-  const [editData, setEditData] = useState<Partial<Product>>({});
-
-  // When opening the modal, set the initial form state
-  const handleEdit = async (id: number) => {
-    const product = await getProduct(String(id));
-    if (product) {
-      setSelectedProduct(product);
-      setEditData({
-        id: product.id,
-        name: product.name,
-        selling_price: product.price?.selling_price,
-        mrp: product.price?.mrp,
-        description: product.description,
-        stock: product.stock,
-        brand: product.brand?.id,  
-        category: product.category,
-      });
-      setEditOpen(true);
-    }
+  const fetchProducts = async (p: number) => {
+    setLoading(true);
+    const data = await getAllProducts(p);
+    setProducts(data.results || []);
+    setCount(data.count || 0);
+    setLoading(false);
   };
 
-  const onSave = async () => {
-    setLoading(true);
+  useEffect(() => { fetchProducts(page); }, [page]);
 
-    try {
-      const payload = {
-        product: {
-          id: editData.id,
-          name: editData.name,
-          description: editData.description,
-          stock: Number(editData.stock),
-
-          brand: Number(editData.brand), // MUST be valid ID
-          category: editData.category || "general",
-
-          price: {
-            mrp: Number(editData.mrp || 0),
-            selling_price: Number(editData.selling_price || 0),
-            discount_rate: 0,
-          },
-
-          specifications: [],
-          features: [],
-        },
-      };
-
-      console.log("FINAL PAYLOAD:", payload); // 👈 DEBUG
-
-      await saveProduct(payload);
-
-      setEditOpen(false);
-
-      const data = await getAllProducts(page);
-      setProducts(data.results || []);
-
-    } catch (error) {
-      console.error("Failed to save:", error);
-    } finally {
-      setLoading(false);
+  const handleDelete = async (id: number, name: string) => {
+    if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
+    setDeletingId(id);
+    const result = await deleteProduct(id);
+    setDeletingId(null);
+    if (result.ok) {
+      fetchProducts(page);
+    } else {
+      alert("Failed to delete product. Please try again.");
     }
   };
 
@@ -125,7 +59,6 @@ export default function AdminProductsPage() {
           <h1 className="text-3xl font-bold">Products</h1>
           <p className="text-gray-500">Manage {count} items</p>
         </div>
-
         <Link
           href="/admin/upload"
           className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg"
@@ -151,9 +84,7 @@ export default function AdminProductsPage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="text-center p-6">
-                  Loading...
-                </td>
+                <td colSpan={5} className="text-center p-6">Loading...</td>
               </tr>
             ) : (
               products.map((product: any) => (
@@ -161,43 +92,40 @@ export default function AdminProductsPage() {
                   {/* PRODUCT */}
                   <td className="p-4 flex items-center gap-3">
                     <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
-                      {product.image ? (
-                        <img
-                          src={
-                            product.image.startsWith("http")
-                              ? product.image
-                              : `http://localhost:8000${product.image}`
-                          }
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <Package className="w-5 h-5 text-gray-400" />
-                      )}
+                      {(() => {
+                        const imgUrl = Array.isArray(product.image)
+                          ? (product.image[0]?.url ?? product.image[0]?.original ?? null)
+                          : (typeof product.image === "string" ? product.image : null);
+                        return imgUrl ? (
+                          <img
+                            src={imgUrl.startsWith("http") ? imgUrl : `http://localhost:8000${imgUrl}`}
+                            className="w-full h-full object-cover"
+                            alt={product.name}
+                          />
+                        ) : (
+                          <Package className="w-5 h-5 text-gray-400" />
+                        );
+                      })()}
                     </div>
-
                     <div>
                       <div className="font-semibold">{product.name}</div>
-                      <div className="text-xs text-gray-400">
-                        ID: {product.id}
-                      </div>
+                      <div className="text-xs text-gray-400">ID: {product.id}</div>
                     </div>
                   </td>
 
                   {/* BRAND */}
                   <td className="p-4 text-sm">
-                    {product.brand?.name || "Power Tools"}
+                    {product.brand?.name || "—"}
                   </td>
 
                   {/* PRICE */}
                   <td className="p-4 text-sm font-bold">
                     ₹{product.price?.selling_price}
-
                     {product.price?.mrp !== product.price?.selling_price && (
                       <span className="ml-2 text-gray-400 line-through text-xs">
                         ₹{product.price?.mrp}
                       </span>
                     )}
-
                     {product.price?.discount_rate !== "0.00" && (
                       <span className="ml-2 text-red-500 text-xs">
                         {product.price?.discount_rate}% OFF
@@ -214,12 +142,23 @@ export default function AdminProductsPage() {
 
                   {/* ACTIONS */}
                   <td className="p-4 text-right">
-                    <button
-                      onClick={() => handleEdit(product.id)}
-                      className="p-2 hover:text-blue-600"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </button>
+                    <div className="flex items-center justify-end gap-1">
+                      <Link
+                        href={`/admin/products/${product.id}`}
+                        className="p-2 hover:text-blue-600 inline-flex"
+                        title="Edit"
+                      >
+                        <Edit3 className="w-4 h-4" />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(product.id, product.name)}
+                        disabled={deletingId === product.id}
+                        className="p-2 hover:text-red-600 disabled:opacity-40"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -236,11 +175,7 @@ export default function AdminProductsPage() {
           >
             Prev
           </button>
-
-          <span>
-            Page {page} / {totalPages || 1}
-          </span>
-
+          <span>Page {page} / {totalPages || 1}</span>
           <button
             onClick={() => setPage((p) => p + 1)}
             disabled={page === totalPages || totalPages === 0}
@@ -250,85 +185,6 @@ export default function AdminProductsPage() {
           </button>
         </div>
       </div>
-      {editOpen && selectedProduct && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-2xl">
-            <h2 className="text-xl font-bold mb-4">Edit Product (ID: {editData.id})</h2>
-            <label className="block text-xs font-medium text-gray-500">Brand</label>
-            <select
-              value={editData.brand || ""}
-              onChange={(e) =>
-                setEditData({ ...editData, brand: Number(e.target.value) })
-              }
-              className="w-full border p-2 rounded"
-            >
-              <option value="">Select Brand</option>
-              {brands.map((b) => (
-                <option key={b.id} value={b.id}>
-                  {b.name}
-                </option>
-              ))}
-            </select>
-            <div className="space-y-3">
-              <label className="block text-xs font-medium text-gray-500">Product Name</label>
-              <input
-                value={editData.name || ""}
-                onChange={(e) => setEditData({ ...editData, name: e.target.value })}
-                className="w-full border p-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
-              />
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-medium text-gray-500">Selling Price</label>
-                  <input
-                    value={editData.selling_price || ""}
-                    onChange={(e) => setEditData({ ...editData, selling_price: Number(e.target.value) })}
-                    className="w-full border p-2 rounded"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-medium text-gray-500">MRP</label>
-                  <input
-                    value={editData.mrp || ""}
-                    onChange={(e) => setEditData({ ...editData, mrp: Number(e.target.value) })}
-                    className="w-full border p-2 rounded"
-                  />
-                </div>
-              </div>
-
-              <label className="block text-xs font-medium text-gray-500">Stock</label>
-              <input
-                value={editData.stock || ""}
-                onChange={(e) => setEditData({ ...editData, stock: Number(e.target.value) })}
-                className="w-full border p-2 rounded"
-              />
-
-              <label className="block text-xs font-medium text-gray-500">Description</label>
-              <textarea
-                value={editData.description || ""}
-                onChange={(e) => setEditData({ ...editData, description: e.target.value })}
-                className="w-full border p-2 rounded h-24"
-              />
-            </div>
-
-            <div className="flex justify-end gap-2 mt-6">
-              <button
-                onClick={() => setEditOpen(false)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={onSave}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition"
-              >
-                {loading ? "Saving..." : "Save Changes"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

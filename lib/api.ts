@@ -181,14 +181,56 @@ export async function getAllProducts(page: number = 1) {
 
 export async function getProduct(id: string) {
   try {
-    const res = await fetch(`${BASE_URL}/product/${id}/`, { cache: 'no-store' }); 
+    const res = await fetch(`${BASE_URL}/product/${id}/`, { cache: 'no-store' });
     if (!res.ok) return null;
-    
+
     const data = await res.json();
-    return data.response; 
+    return data.response;
   } catch (error) {
     console.error("Fetch error:", error);
     return null;
+  }
+}
+
+export async function getProductDetails(id: string) {
+  try {
+    const res = await fetch(`${BASE_URL}/product/${id}/details/`, { cache: 'no-store' });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.product;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return null;
+  }
+}
+
+export async function updateProduct(id: number, payload: any) {
+  try {
+    const res = await fetch(`${BASE_URL}/product/${id}/`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product: payload }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      console.error("UPDATE ERROR:", res.status, data);
+      return { ok: false, errors: data.errors };
+    }
+    return { ok: true, data };
+  } catch (err) {
+    console.error("UPDATE ERROR:", err);
+    return { ok: false, errors: null };
+  }
+}
+
+export async function deleteProduct(id: number) {
+  try {
+    const res = await fetch(`${BASE_URL}/product/${id}/`, { method: "DELETE" });
+    const data = await res.json();
+    return { ok: res.ok, data };
+  } catch (err) {
+    console.error("DELETE ERROR:", err);
+    return { ok: false, data: null };
   }
 }
 
@@ -291,3 +333,63 @@ export async function uploadProductImage(
 
   return await res.json();
 }
+
+export async function deleteProductImage(imageId: number) {
+  const res = await fetch(`${BASE_URL}/product-images/${imageId}/`, {
+    method: "DELETE",
+  });
+  return { ok: res.ok, status: res.status };
+}
+
+export async function downloadBulkTemplate(): Promise<Blob> {
+  const res = await fetch(`${BASE_URL}/product/bulk-upload/template/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Failed to download template: ${res.status}`);
+  return res.blob();
+}
+
+export async function uploadBulkFile(file: File, dryRun = false) {
+  const formData = new FormData();
+  formData.append("file", file);
+  if (dryRun) formData.append("dry_run", "true");
+
+  const res = await fetch(`${BASE_URL}/product/bulk-upload/v2/`, {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.detail || `Upload failed: ${res.status}`);
+  return data as { job_id: number; status: string; [key: string]: any };
+}
+
+export async function getImportJobs() {
+  const res = await fetch(`${BASE_URL}/product/import-jobs/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return [];
+  return res.json() as Promise<ImportJob[]>;
+}
+
+export async function getImportJob(id: number) {
+  const res = await fetch(`${BASE_URL}/product/import-jobs/${id}/`, {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error(`Failed to fetch job ${id}`);
+  return res.json() as Promise<ImportJob>;
+}
+
+export type ImportJob = {
+  id: number;
+  status: "pending" | "processing" | "done" | "failed";
+  dry_run: boolean;
+  total_rows: number;
+  rows_processed: number;
+  created_count: number;
+  updated_count: number;
+  failed_count: number;
+  created_at: string;
+  results?: any[];
+  errors?: { row: number; error: string }[];
+};
