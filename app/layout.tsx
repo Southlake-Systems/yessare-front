@@ -1,6 +1,15 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { Barlow } from 'next/font/google';
+
+const barlow = Barlow({ 
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '900'],
+  variable: '--font-barlow',
+});
+
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

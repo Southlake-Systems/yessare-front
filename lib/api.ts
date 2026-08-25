@@ -73,17 +73,40 @@ export async function createBrand(data: {
   const formData = new FormData();
 
   formData.append("name", data.name);
-  if (data.description) formData.append("description", data.description);
-  if (data.image) formData.append("image_original", data.image);
+
+  if (data.description) {
+    formData.append("description", data.description);
+  }
+
+  if (data.image) {
+    formData.append("image_original", data.image);
+  }
 
   const res = await fetch(`${BASE_URL}/brand/new/`, {
     method: "POST",
     body: formData,
   });
 
-  return res.json();
-}
+  const text = await res.text();
 
+  let result;
+
+  try {
+    result = JSON.parse(text);
+  } catch {
+    console.error("Non-JSON response:", text);
+    throw new Error(
+      `API returned ${res.status} instead of JSON`
+    );
+  }
+
+  if (!res.ok) {
+    console.error("Create brand error:", res.status, result);
+    throw new Error(result?.detail || "Failed to create brand");
+  }
+
+  return result;
+}
 
 export async function getHomeSections() {
   const res = await fetch(`${BASE_URL}/home/all/?count=5`, {

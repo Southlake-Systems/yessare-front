@@ -13,7 +13,7 @@ export default async function BrandsPage() {
                     <p className="text-sm text-gray-500">Manage your product brands and their display logos.</p>
                 </div>
                 <Link
-                    href="/admin/add_brands"
+                    href="/admin/brands/add_brands"
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium shadow-sm"
                 >
                     <Plus size={18} />

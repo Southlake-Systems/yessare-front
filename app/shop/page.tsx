@@ -4,7 +4,7 @@ import Header from "@/app/components/Header";
 import Hero from "@/app/components/Hero";
 import Section from "@/app/components/Section";
 import { getBrands, getHomeSections } from "@/lib/api";
-
+import ShopCarousel from "@/app/components/ShopCarousel";
 export default async function Shop() {
   const brands = await getBrands();
   const sections = await getHomeSections();
@@ -12,7 +12,7 @@ export default async function Shop() {
   return (
     <div className="min-h-screen">
       <Header />
-      <Hero />
+      <ShopCarousel />
 
       <div className="mx-auto px-4 space-y-8 pb-10">
 

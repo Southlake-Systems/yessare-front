@@ -51,39 +51,103 @@ export default async function Home() {
   return (
     <div className="">
       <Header />
+{/* HERO SECTION */}
+{/* HERO SECTION */}
+<section className="relative min-h-250 overflow-hidden bg-[#f8fbff]">
 
-      {/* HERO SECTION */}
-      <section
-        className=" relative py-32 md:py-70 px-4 sm:px-6 lg:px-8 border-b border-gray-100 bg-cover bg-center"
-        style={{
-          backgroundImage: "url('/main2.png')", // 
-        }}
-      >
-        <div className="absolute inset-0 bg-black/60"></div>
+  {/* Background */}
+  <div className="absolute inset-0">
 
-        <div className="relative max-w-4xl mx-auto flex flex-col items-center justify-center text-center">
-          <h1 className="text-5xl md:text-6xl font-extrabold mb-8 tracking-tight text-white leading-tight">
-            Yessare — Kerala’s First{" "}
-            <span className="text-blue-400">Tools Supermarket</span>
-          </h1>
+    <img
+      src="/shopherotools.png"
+      alt="Professional power tools"
+      className="absolute inset-0 h-full w-full object-cover object-[center_35%]"
+    />
 
-          <p className="max-w-3xl text-xl md:text-2xl text-gray-200 leading-relaxed mb-12">
-            One-stop destination for all your tool needs with a wide multibrand collection, best pricing, and trusted service.
-          </p>
+    {/* Left readability gradient */}
+    <div className="absolute inset-0 bg-gradient-to-r from-white via-white/85 via-[48%] to-transparent" />
 
-          {/* <div className="flex flex-col sm:flex-row gap-6">
-            <a
-              href="/shop"
-              className="inline-block bg-blue-500 hover:bg-blue-600 text-white px-10 py-5 rounded-full font-bold transition duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-            >
-              Shop Now
-            </a>
-          </div> */}
-        </div>
-      </section>
+    {/* Bottom fade */}
+    <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#f8fbff] to-transparent" />
+
+  </div>
+
+  {/* CONTENT */}
+  <div className="relative z-10 mx-auto flex min-h-230 w-full max-w-[1800px] items-center px-6 sm:px-10 lg:px-16 xl:px-20">
+
+    <div className="px-11 max-w-[680px] pt-15">
+
+      {/* Heading */}
+      <h1 className=" text-5xl font-black leading-[0.98] tracking-wide text-slate-950 sm:text-6xl md:text-7xl lg:text-[82px]">
+
+        Everything You
+        <br />
+
+        Need.
+        <br />
+
+        <span className="text-blue-600">
+          One Place.
+        </span>
+
+      </h1>
+
+      {/* Description */}
+      <p className="mt-8 max-w-[600px] text-lg leading-8 text-slate-600 md:text-xl">
+        Professional power tools, industrial equipment and everyday
+        essentials from trusted brands — all under one roof.
+      </p>
+
+      {/* Buttons */}
+      <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+
+        <Link
+          href="/shop"
+          className="group inline-flex h-14 items-center justify-center gap-3 rounded-xl bg-blue-600 px-8 text-base font-bold text-white shadow-[0_12px_30px_rgba(37,99,235,0.25)] transition-all duration-300 hover:-translate-y-1 hover:bg-blue-700 hover:shadow-[0_18px_40px_rgba(37,99,235,0.35)]"
+        >
+          Shop Now
+          <span className="transition-transform group-hover:translate-x-1">
+            →
+          </span>
+        </Link>
+
+        <Link
+          href="/#categories"
+          className="group inline-flex h-14 items-center justify-center gap-3 rounded-xl border-2 border-blue-600 bg-white/90 px-8 text-base font-bold text-blue-600 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-blue-50"
+        >
+          Explore Categories
+          <span className="transition-transform group-hover:translate-x-1">
+            →
+          </span>
+        </Link>
+
+      </div>
+
+      {/* Trust */}
+      <div className="mt-9 flex flex-wrap items-center gap-x-7 gap-y-4">
+
+        <TrustItem text="Genuine Products" />
+
+        <div className="hidden h-5 w-px bg-slate-300 sm:block" />
+
+        <TrustItem text="300+ Brands" />
+
+        <div className="hidden h-5 w-px bg-slate-300 sm:block" />
+
+        <TrustItem text="Expert Support" />
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
 
       {/* ABOUT SECTION */}
-      <section className="bg-white py-24 px-4 sm:px-6 lg:px-8">
+      <section className="bg-white py-24 px-4 sm:px-6 lg:px-8" id="about">
         <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div>
             <h2 className="text-4xl md:text-5xl font-extrabold text-black leading-tight mb-8">
@@ -107,7 +171,7 @@ export default async function Home() {
         </div>
       </section>
 {/* CATEGORIES SECTION */}
-<section className="bg-white py-24 px-4 sm:px-6 lg:px-8">
+<section className="bg-white py-24 px-4 sm:px-6 lg:px-8" id="categories">
   <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
     <div className="max-w-2xl">
       <h2 className="text-sm font-bold tracking-[0.2em] uppercase text-yellow-600 mb-3">
@@ -117,18 +181,17 @@ export default async function Home() {
         What We <span className="text-yellow-500">Offer</span>
       </h2>
     </div>
-    {/* <Link 
-      href="/shop" 
+    <Link 
+      href="/shop"
       className="text-slate-900 font-bold border-b-2 border-yellow-400 pb-1 hover:text-yellow-600 transition-colors"
     >
       View All Categories →
-    </Link> */}
+    </Link>
   </div>
 
   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-8 max-w-7xl mx-auto">
     {categories.map((cat, idx) => (
-      <Link
-        href={`/shop?category=${cat.name.toLowerCase().replace(/\s+/g, "-")}`}
+      <div
         key={idx}
         className="group relative block overflow-hidden rounded-3xl bg-slate-100 aspect-[4/5] transition-all duration-500 hover:-translate-y-2"
       >
@@ -157,7 +220,7 @@ export default async function Home() {
 
         {/* Subtle Inner Border Glow */}
         <div className="absolute inset-0 rounded-3xl border border-white/10 group-hover:border-yellow-500/50 transition-colors pointer-events-none" />
-      </Link>
+      </div>
     ))}
   </div>
 </section>
@@ -426,6 +489,18 @@ export default async function Home() {
       </section>
 
       <Footer />
+    </div>
+  );
+}
+
+function TrustItem({ text }: { text: string }) {
+  return (
+    <div className="flex items-center gap-2.5 text-sm font-medium text-slate-700">
+      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">
+        ✓
+      </span>
+
+      {text}
     </div>
   );
 }
