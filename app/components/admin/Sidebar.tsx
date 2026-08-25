@@ -8,7 +8,8 @@ import {
   Layers,
   Upload,
   Tag,
-  PlusCircle
+  PlusCircle,
+  FileSpreadsheet,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -20,7 +21,8 @@ export default function Sidebar() {
     { label: "Brands", path: "/admin/brands/view_brands", icon: Layers },
     // { label: "Add Brands", path: "/admin/add_brands", icon: PlusCircle },
     // { label: "Add Products", path: "/admin/upload", icon: Upload },
-    { label: "Sections", path: "/admin/offer_section", icon: Tag }
+    { label: "Sections", path: "/admin/offer_section", icon: Tag },
+    { label: "Bulk Import", path: "/admin/bulk-upload", icon: FileSpreadsheet },
   ];
 
   return (
