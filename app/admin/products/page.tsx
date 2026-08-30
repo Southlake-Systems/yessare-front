@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { getAllProducts, deleteProduct } from "@/lib/api";
 import { Plus, Edit3, Package, Trash2 } from "lucide-react";
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 
 type Product = {
   id: number;
@@ -20,6 +21,7 @@ type Product = {
 };
 
 export default function AdminProductsPage() {
+  const { isAdmin } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
@@ -59,13 +61,15 @@ export default function AdminProductsPage() {
           <h1 className="text-3xl font-bold">Products</h1>
           <p className="text-gray-500">Manage {count} items</p>
         </div>
-        <Link
-          href="/admin/upload"
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg"
-        >
-          <Plus className="w-4 h-4" />
-          Add Product
-        </Link>
+        {isAdmin && (
+          <Link
+            href="/admin/upload"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg"
+          >
+            <Plus className="w-4 h-4" />
+            Add Product
+          </Link>
+        )}
       </div>
 
       {/* TABLE */}
@@ -143,21 +147,27 @@ export default function AdminProductsPage() {
                   {/* ACTIONS */}
                   <td className="p-4 text-right">
                     <div className="flex items-center justify-end gap-1">
-                      <Link
-                        href={`/admin/products/${product.id}`}
-                        className="p-2 hover:text-blue-600 inline-flex"
-                        title="Edit"
-                      >
-                        <Edit3 className="w-4 h-4" />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(product.id, product.name)}
-                        disabled={deletingId === product.id}
-                        className="p-2 hover:text-red-600 disabled:opacity-40"
-                        title="Delete"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {isAdmin ? (
+                        <>
+                          <Link
+                            href={`/admin/products/${product.id}`}
+                            className="p-2 hover:text-blue-600 inline-flex"
+                            title="Edit"
+                          >
+                            <Edit3 className="w-4 h-4" />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(product.id, product.name)}
+                            disabled={deletingId === product.id}
+                            className="p-2 hover:text-red-600 disabled:opacity-40"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-xs text-gray-400">—</span>
+                      )}
                     </div>
                   </td>
                 </tr>

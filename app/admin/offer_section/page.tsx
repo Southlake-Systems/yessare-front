@@ -17,6 +17,9 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import { GripVertical } from "lucide-react";
+import BrandSelect from "@/app/components/brand/BrandSelect";
+import { authFetch } from "@/lib/http";
+import { useAuth } from "@/hooks/useAuth";
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 type Section = {
@@ -35,6 +38,7 @@ function SortableSection({
   section,
   selectedSection,
   setSelectedSection,
+  isAdmin,
 }: any) {
   const {
     attributes,
@@ -81,32 +85,35 @@ function SortableSection({
           <CheckCircle2 size={16} />
         )}
 
-        <button
-          onClick={async (e) => {
-            e.stopPropagation();
+        {isAdmin && (
+          <button
+            onClick={async (e) => {
+              e.stopPropagation();
 
-            if (!confirm("Delete section?"))
-              return;
+              if (!confirm("Delete section?"))
+                return;
 
-            await fetch(
-              `${BASE_URL}/home/sections/delete/${section.id}/`,
-              {
-                method: "DELETE",
-              }
-            );
+              await authFetch(
+                `${BASE_URL}/home/sections/delete/${section.id}/`,
+                {
+                  method: "DELETE",
+                }
+              );
 
-            window.location.reload();
-          }}
-          className="text-red-500 hover:text-red-700"
-        >
-          <Trash2 size={16} />
-        </button>
+              window.location.reload();
+            }}
+            className="text-red-500 hover:text-red-700"
+          >
+            <Trash2 size={16} />
+          </button>
+        )}
 
       </div>
     </div>
   );
 }
 export default function OfferSectionPage() {
+  const { isAdmin } = useAuth();
   const [title, setTitle] = useState("");
   const [order, setOrder] = useState(1);
   const [sections, setSections] = useState<Section[]>([]);
@@ -114,6 +121,7 @@ export default function OfferSectionPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedProducts, setSelectedProducts] = useState<number[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [brandId, setBrandId] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   useEffect(() => {
@@ -147,7 +155,7 @@ export default function OfferSectionPage() {
     setSections(newSections);
 
     try {
-      await fetch(
+      await authFetch(
         `${BASE_URL}/home/sections/reorder/`,
         {
           method: "PATCH",
@@ -173,7 +181,7 @@ export default function OfferSectionPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/home/sections/update/${selectedSection}/`, {
+      const res = await authFetch(`${BASE_URL}/home/sections/update/${selectedSection}/`, {
         method: "PATCH", // Use PATCH for updates
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -197,7 +205,7 @@ export default function OfferSectionPage() {
   // --- FETCHERS ---
   const fetchSections = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/home/all/`);
+      const res = await authFetch(`${BASE_URL}/home/all/`);
       if (!res.ok) {
         console.error("Error fetching sections:", res.status);
         return;
@@ -210,7 +218,7 @@ export default function OfferSectionPage() {
   };
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${BASE_URL}/product/`);
+      const res = await authFetch(`${BASE_URL}/product/`);
 
       if (!res.ok) return;
 
@@ -229,16 +237,23 @@ export default function OfferSectionPage() {
   }, [selectedSection]);
   // --- LIVE SEARCH ---
   useEffect(() => {
-    if (searchTerm.trim() === "") {
+    const hasText = searchTerm.trim().length >= 2;
+
+    if (searchTerm.trim() === "" && !brandId) {
       fetchProducts();
       return;
     }
-    if (searchTerm.length < 2) return;
+    // Text present but too short and no brand filter -> wait for more input
+    if (!hasText && !brandId) return;
 
     const delayDebounceFn = setTimeout(async () => {
       setIsSearching(true);
       try {
-        const res = await fetch(`${BASE_URL}/product/search/live/?q=${encodeURIComponent(searchTerm)}`);
+        const params = new URLSearchParams();
+        if (hasText) params.set("q", searchTerm.trim());
+        if (brandId) params.set("brand", brandId);
+
+        const res = await authFetch(`${BASE_URL}/product/search/live/?${params.toString()}`);
         if (!res.ok) {
           console.error("Error fetching search results:", res.status);
           return;
@@ -253,7 +268,7 @@ export default function OfferSectionPage() {
     }, 300);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchTerm]);
+  }, [searchTerm, brandId]);
 
   useEffect(() => {
     fetchSections();
@@ -265,7 +280,7 @@ export default function OfferSectionPage() {
     if (!title) return;
     setLoading(true);
     try {
-      await fetch(`${BASE_URL}/home/sections/create/`, {
+      await authFetch(`${BASE_URL}/home/sections/create/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, order }),
@@ -289,7 +304,7 @@ export default function OfferSectionPage() {
 
     setLoading(true);
     try {
-      const res = await fetch(`${BASE_URL}/home/sections/add-products/`, {
+      const res = await authFetch(`${BASE_URL}/home/sections/add-products/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -324,6 +339,12 @@ export default function OfferSectionPage() {
 
         {/* LEFT COLUMN */}
         <div className="lg:col-span-4 space-y-6">
+          {!isAdmin && (
+            <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3">
+              You have read-only (Viewer) access. Editing is disabled.
+            </div>
+          )}
+          {isAdmin && (
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               <Plus size={20} className="text-blue-600" /> New Section
@@ -350,6 +371,7 @@ export default function OfferSectionPage() {
               </button>
             </div>
           </div>
+          )}
 
           <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
@@ -372,7 +394,7 @@ export default function OfferSectionPage() {
                       setSelectedSection={
                         setSelectedSection
                       }
-
+                      isAdmin={isAdmin}
                     />
 
                   ))}
@@ -392,18 +414,23 @@ export default function OfferSectionPage() {
                   <h2 className="text-xl font-bold text-slate-900">Add Products</h2>
                   <p className="text-sm text-slate-500">Search Yessare inventory for this section.</p>
                 </div>
-                <div className="relative">
-                  {isSearching ? (
-                    <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 animate-spin" size={18} />
-                  ) : (
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                  )}
-                  <input
-                    className="pl-10 pr-4 py-2 border rounded-full text-sm w-full md:w-64 focus:ring-2 focus:ring-blue-500 outline-none"
-                    placeholder="Live search tools..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                  <div className="w-full sm:w-48">
+                    <BrandSelect value={brandId} onChange={setBrandId} />
+                  </div>
+                  <div className="relative">
+                    {isSearching ? (
+                      <Loader2 className="absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 animate-spin" size={18} />
+                    ) : (
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                    )}
+                    <input
+                      className="pl-10 pr-4 py-2 border rounded-full text-sm w-full md:w-64 focus:ring-2 focus:ring-blue-500 outline-none"
+                      placeholder="Live search tools..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -420,6 +447,7 @@ export default function OfferSectionPage() {
                         type="checkbox"
                         className="w-4 h-4 text-blue-600 rounded"
                         checked={isChecked}
+                        disabled={!isAdmin}
                         onChange={(e) => {
                           if (e.target.checked) {
                             setSelectedProducts([...selectedProducts, p.id]);
@@ -441,10 +469,40 @@ export default function OfferSectionPage() {
                 )}
               </div>
 
-              <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-600">
-                  {selectedProducts.length} items selected
-                </span>
+              {isAdmin && (
+              <div className="p-6 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <span className="text-sm font-medium text-slate-600">
+                    {selectedProducts.length} items selected
+                  </span>
+                  {(() => {
+                    const visibleIds = products.map((p) => p.id);
+                    const allSelected =
+                      visibleIds.length > 0 &&
+                      visibleIds.every((id) => selectedProducts.includes(id));
+                    return (
+                      <button
+                        type="button"
+                        disabled={visibleIds.length === 0}
+                        onClick={() => {
+                          if (allSelected) {
+                            const visible = new Set(visibleIds);
+                            setSelectedProducts((prev) =>
+                              prev.filter((id) => !visible.has(id))
+                            );
+                          } else {
+                            setSelectedProducts((prev) =>
+                              Array.from(new Set([...prev, ...visibleIds]))
+                            );
+                          }
+                        }}
+                        className="text-sm font-semibold text-blue-600 hover:underline disabled:opacity-40 disabled:no-underline"
+                      >
+                        {allSelected ? "Clear results" : "Select all results"}
+                      </button>
+                    );
+                  })()}
+                </div>
                 <button
                   onClick={updateSectionContent}
                   disabled={loading || selectedProducts.length === 0}
@@ -454,6 +512,7 @@ export default function OfferSectionPage() {
                   {loading ? "Updating..." : "Update Section Content"}
                 </button>
               </div>
+              )}
             </div>
           ) : (
             <div className="h-full min-h-[450px] bg-white rounded-2xl border border-dashed border-slate-300 flex flex-col items-center justify-center text-center p-12">

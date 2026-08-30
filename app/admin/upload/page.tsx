@@ -9,10 +9,12 @@ import {
 import { useProduct } from "@/hooks/products/useProduct";
 import BrandSelect from "@/app/components/brand/BrandSelect";
 import { uploadProductImage } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function ProductEditor() {
   const { saveProduct, loading, error } = useProduct();
   const router = useRouter();
+  const { isAdmin, ready } = useAuth();
 
   const [form, setForm] = useState({
     name: "",
@@ -93,6 +95,16 @@ export default function ProductEditor() {
       alert(`Error saving product: ${err.message || "Unknown error"}`);
     }
   };
+  if (ready && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#f4f6f8] p-8">
+        <div className="max-w-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3">
+          You have read-only (Viewer) access. Adding products is disabled.
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f4f6f8] text-sm text-slate-700">
       {/* SIMPLE COMPACT HEADER */}

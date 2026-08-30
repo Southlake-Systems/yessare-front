@@ -1,14 +1,18 @@
 
 
 import { apiClient } from "../lib/apiClient";
+import { authFetch } from "./http";
 
 
 export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
 // lib/api.ts
-export async function getBrands() {
+export async function getBrands(opts?: { shopOnly?: boolean }) {
   try {
-    const res = await fetch(`${BASE_URL}/brand/all/`, {
+    const url = opts?.shopOnly
+      ? `${BASE_URL}/brand/all/?shop=true`
+      : `${BASE_URL}/brand/all/`;
+    const res = await authFetch(url, {
       cache: "no-store",
     });
 
@@ -29,7 +33,7 @@ export async function getBrands() {
 
 export async function getProductsByBrand(brandId: number) {
   try {
-    const res = await fetch(
+    const res = await authFetch(
       `${BASE_URL}/brand/${brandId}/product/`,
       {
         cache: "no-store",
@@ -82,7 +86,7 @@ export async function createBrand(data: {
     formData.append("image_original", data.image);
   }
 
-  const res = await fetch(`${BASE_URL}/brand/new/`, {
+  const res = await authFetch(`${BASE_URL}/brand/new/`, {
     method: "POST",
     body: formData,
   });
@@ -109,7 +113,7 @@ export async function createBrand(data: {
 }
 
 export async function getHomeSections() {
-  const res = await fetch(`${BASE_URL}/home/all/?count=5`, {
+  const res = await authFetch(`${BASE_URL}/home/all/?count=5`, {
     cache: "no-store",
   });
 
@@ -144,7 +148,7 @@ export async function getHomeSections() {
 export async function liveSearch(q: string) {
   if (q.length < 2) return [];
 
-  const res = await fetch(`${BASE_URL}/product/search/live/?q=${q}`, {
+  const res = await authFetch(`${BASE_URL}/product/search/live/?q=${q}`, {
     cache: "no-store",
   });
 
@@ -154,7 +158,7 @@ export async function liveSearch(q: string) {
 }
 
 export async function searchProducts(q: string) {
-  const res = await fetch(`${BASE_URL}/product/search/?q=${q}`, {
+  const res = await authFetch(`${BASE_URL}/product/search/?q=${q}`, {
     cache: "no-store",
   });
 
@@ -165,7 +169,7 @@ export async function searchProducts(q: string) {
 
 export async function getAllProducts(page: number = 1) {
   try {
-    const res = await fetch(`${BASE_URL}/product/?page=${page}`, {
+    const res = await authFetch(`${BASE_URL}/product/?page=${page}`, {
       cache: "no-store",
     });
 
@@ -181,7 +185,7 @@ export async function getAllProducts(page: number = 1) {
 
 export async function getProduct(id: string) {
   try {
-    const res = await fetch(`${BASE_URL}/product/${id}/`, { cache: 'no-store' });
+    const res = await authFetch(`${BASE_URL}/product/${id}/`, { cache: 'no-store' });
     if (!res.ok) return null;
 
     const data = await res.json();
@@ -194,7 +198,7 @@ export async function getProduct(id: string) {
 
 export async function getProductDetails(id: string) {
   try {
-    const res = await fetch(`${BASE_URL}/product/${id}/details/`, { cache: 'no-store' });
+    const res = await authFetch(`${BASE_URL}/product/${id}/details/`, { cache: 'no-store' });
     if (!res.ok) return null;
     const data = await res.json();
     return data.product;
@@ -206,7 +210,7 @@ export async function getProductDetails(id: string) {
 
 export async function updateProduct(id: number, payload: any) {
   try {
-    const res = await fetch(`${BASE_URL}/product/${id}/`, {
+    const res = await authFetch(`${BASE_URL}/product/${id}/`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ product: payload }),
@@ -225,7 +229,7 @@ export async function updateProduct(id: number, payload: any) {
 
 export async function deleteProduct(id: number) {
   try {
-    const res = await fetch(`${BASE_URL}/product/${id}/`, { method: "DELETE" });
+    const res = await authFetch(`${BASE_URL}/product/${id}/`, { method: "DELETE" });
     const data = await res.json();
     return { ok: res.ok, data };
   } catch (err) {
@@ -236,7 +240,7 @@ export async function deleteProduct(id: number) {
 
 export async function saveProduct(payload: any) {
   try {
-    const res = await fetch(`${BASE_URL}/product/add/`, {
+    const res = await authFetch(`${BASE_URL}/product/add/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -260,7 +264,7 @@ export async function saveProduct(payload: any) {
 
 
 export async function deleteBrand(id: number) {
-  const res = await fetch(
+  const res = await authFetch(
     `${BASE_URL}/brand/${id}/delete/`,
     {
       method: "DELETE",
@@ -289,13 +293,35 @@ export async function updateBrand(
   if (data.image)
     formData.append("image_original", data.image);
 
-  const res = await fetch(
+  const res = await authFetch(
     `${BASE_URL}/brand/${id}/update/`,
     {
       method: "PUT",
       body: formData,
     }
   );
+
+  return res.json();
+}
+
+export async function setBrandShopVisibility(
+  id: number,
+  value: boolean
+) {
+  const formData = new FormData();
+  formData.append("show_on_shop", value ? "true" : "false");
+
+  const res = await authFetch(
+    `${BASE_URL}/brand/${id}/update/`,
+    {
+      method: "PUT",
+      body: formData,
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Update failed: ${res.status}`);
+  }
 
   return res.json();
 }
@@ -307,7 +333,7 @@ export async function getBrand(id: string) {
 export async function getSectionProducts(
   sectionId: string
 ) {
-  const res = await fetch(
+  const res = await authFetch(
     `${BASE_URL}/home/sections/${sectionId}/products/`,
     {
       cache: "no-store",
@@ -323,7 +349,7 @@ export async function getSectionProducts(
 export async function uploadProductImage(
   formData: FormData
 ) {
-  const res = await fetch(
+  const res = await authFetch(
     `${BASE_URL}/product/image/upload/`,
     {
       method: "POST",
@@ -335,14 +361,14 @@ export async function uploadProductImage(
 }
 
 export async function deleteProductImage(imageId: number) {
-  const res = await fetch(`${BASE_URL}/product-images/${imageId}/`, {
+  const res = await authFetch(`${BASE_URL}/product-images/${imageId}/`, {
     method: "DELETE",
   });
   return { ok: res.ok, status: res.status };
 }
 
 export async function downloadBulkTemplate(): Promise<Blob> {
-  const res = await fetch(`${BASE_URL}/product/bulk-upload/template/`, {
+  const res = await authFetch(`${BASE_URL}/product/bulk-upload/template/`, {
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`Failed to download template: ${res.status}`);
@@ -354,7 +380,7 @@ export async function uploadBulkFile(file: File, dryRun = false) {
   formData.append("file", file);
   if (dryRun) formData.append("dry_run", "true");
 
-  const res = await fetch(`${BASE_URL}/product/bulk-upload/v2/`, {
+  const res = await authFetch(`${BASE_URL}/product/bulk-upload/v2/`, {
     method: "POST",
     body: formData,
   });
@@ -365,7 +391,7 @@ export async function uploadBulkFile(file: File, dryRun = false) {
 }
 
 export async function getImportJobs() {
-  const res = await fetch(`${BASE_URL}/product/import-jobs/`, {
+  const res = await authFetch(`${BASE_URL}/product/import-jobs/`, {
     cache: "no-store",
   });
   if (!res.ok) return [];
@@ -373,7 +399,7 @@ export async function getImportJobs() {
 }
 
 export async function getImportJob(id: number) {
-  const res = await fetch(`${BASE_URL}/product/import-jobs/${id}/`, {
+  const res = await authFetch(`${BASE_URL}/product/import-jobs/${id}/`, {
     cache: "no-store",
   });
   if (!res.ok) throw new Error(`Failed to fetch job ${id}`);

@@ -1,9 +1,24 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { getBrands } from "@/lib/api";
-import { Edit2, Trash2, Plus, ExternalLink } from "lucide-react"; // Optional: Install lucide-react
+import { Edit2, Plus, ExternalLink } from "lucide-react";
 import Link from "next/link";
 import DeleteBrandButton from "@/app/components/buttons/DeleteBrandButton";
-export default async function BrandsPage() {
-    const brands = await getBrands();
+import BrandShopToggle from "@/app/components/brand/BrandShopToggle";
+import { useAuth } from "@/hooks/useAuth";
+
+export default function BrandsPage() {
+    const { isAdmin } = useAuth();
+    const [brands, setBrands] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        getBrands().then((d) => {
+            setBrands(d);
+            setLoading(false);
+        });
+    }, []);
 
     return (
         <div className="p-8 bg-gray-50 min-h-screen">
@@ -12,16 +27,26 @@ export default async function BrandsPage() {
                     <h1 className="text-2xl font-bold text-gray-900">Brand Management</h1>
                     <p className="text-sm text-gray-500">Manage your product brands and their display logos.</p>
                 </div>
-                <Link
-                    href="/admin/brands/add_brands"
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium shadow-sm"
-                >
-                    <Plus size={18} />
-                    Add Brand
-                </Link>
+                {isAdmin && (
+                    <Link
+                        href="/admin/brands/add_brands"
+                        className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium shadow-sm"
+                    >
+                        <Plus size={18} />
+                        Add Brand
+                    </Link>
+                )}
             </div>
 
-            {brands.length === 0 ? (
+            {!isAdmin && (
+                <div className="mb-6 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3">
+                    You have read-only (Viewer) access. Editing is disabled.
+                </div>
+            )}
+
+            {loading ? (
+                <p className="text-gray-500">Loading brands...</p>
+            ) : brands.length === 0 ? (
                 <div className="bg-white border-2 border-dashed rounded-2xl p-12 text-center">
                     <p className="text-gray-500">No brands found in the database.</p>
                 </div>
@@ -47,14 +72,16 @@ export default async function BrandsPage() {
                                 )}
 
                                 {/* Hover Actions */}
-                                <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                                    <Link href={`/admin/brands/edit_brand/${brand.id}`}>
-                                        <button className="p-2 bg-white rounded-full shadow-sm hover:text-blue-600">
-                                            <Edit2 size={16} />
-                                        </button>
-                                    </Link>
-                                    <DeleteBrandButton id={brand.id} />
-                                </div>
+                                {isAdmin && (
+                                    <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                                        <Link href={`/admin/brands/edit_brand/${brand.id}`}>
+                                            <button className="p-2 bg-white rounded-full shadow-sm hover:text-blue-600">
+                                                <Edit2 size={16} />
+                                            </button>
+                                        </Link>
+                                        <DeleteBrandButton id={brand.id} />
+                                    </div>
+                                )}
                             </div>
 
                             {/* Content Area */}
@@ -70,9 +97,16 @@ export default async function BrandsPage() {
                                 </p>
 
                                 <div className="flex items-center gap-4 pt-3 border-t border-gray-50 text-xs font-medium">
-                                    <span className="text-green-600 flex items-center gap-1">
-                                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" /> Active
-                                    </span>
+                                    {isAdmin ? (
+                                        <BrandShopToggle
+                                            id={brand.id}
+                                            initial={brand.show_on_shop ?? true}
+                                        />
+                                    ) : (
+                                        <span className={brand.show_on_shop ?? true ? "text-green-600" : "text-gray-400"}>
+                                            {(brand.show_on_shop ?? true) ? "On shop" : "Hidden"}
+                                        </span>
+                                    )}
                                     <button className="ml-auto text-blue-600 hover:underline flex items-center gap-1">
                                         View Products <ExternalLink size={12} />
                                     </button>

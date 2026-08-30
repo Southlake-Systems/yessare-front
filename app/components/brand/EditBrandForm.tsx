@@ -3,6 +3,8 @@
 "use client";
 
 import { useState } from "react";
+import { authFetch } from "@/lib/http";
+import { BASE_URL } from "@/lib/auth";
 
 export default function EditBrandForm({
   brand,
@@ -16,6 +18,10 @@ export default function EditBrandForm({
 
   const [image, setImage] = useState<File | null>(
     null
+  );
+
+  const [showOnShop, setShowOnShop] = useState<boolean>(
+    brand.show_on_shop ?? true
   );
 
   const [loading, setLoading] = useState(false);
@@ -42,8 +48,13 @@ export default function EditBrandForm({
       );
     }
 
-    const response = await fetch(
-      `http://localhost:8000/brand/${brand.id}/update/`,
+    formData.append(
+      "show_on_shop",
+      showOnShop ? "true" : "false"
+    );
+
+    const response = await authFetch(
+      `${BASE_URL}/brand/${brand.id}/update/`,
       {
         method: "PUT",
         body: formData,
@@ -97,6 +108,19 @@ export default function EditBrandForm({
           }
           className="w-full border rounded p-3"
         />
+      </div>
+
+      <div className="mb-4">
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={showOnShop}
+            onChange={(e) =>
+              setShowOnShop(e.target.checked)
+            }
+          />
+          Show on shop
+        </label>
       </div>
 
       <div className="mb-6">

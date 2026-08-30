@@ -1,4 +1,5 @@
 // lib/apiClient.ts
+import { authFetch } from "./http";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
 
@@ -6,7 +7,7 @@ export async function apiClient(
   url: string,
   options: RequestInit = {}
 ) {
-  const res = await fetch(`${BASE_URL}${url}`, {
+  const res = await authFetch(`${BASE_URL}${url}`, {
     headers: {
       "Content-Type": "application/json",
     },

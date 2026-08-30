@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link"; // Use Link instead of router.push
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
@@ -10,10 +10,15 @@ import {
   Tag,
   PlusCircle,
   FileSpreadsheet,
+  LogOut,
 } from "lucide-react";
+import { logout } from "@/lib/auth";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user, role, isAdmin } = useAuth();
 
   const navItems = [
     { label: "Dashboard", path: "/admin/dashboard", icon: LayoutDashboard },
@@ -61,8 +66,36 @@ export default function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="mt-auto pt-6 border-t border-slate-100 text-[10px] text-slate-400 font-bold tracking-widest uppercase">
-        Admin Panel v1.0
+      <div className="mt-auto pt-6 border-t border-slate-100 space-y-3">
+        {user && (
+          <div className="flex items-center justify-between gap-2">
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-slate-700 truncate">{user}</p>
+              <span
+                className={`inline-block mt-0.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                  isAdmin
+                    ? "bg-blue-50 text-[#005bae]"
+                    : "bg-slate-100 text-slate-500"
+                }`}
+              >
+                {role === "admin" ? "Admin" : "Viewer"}
+              </span>
+            </div>
+            <button
+              onClick={() => {
+                logout();
+                router.replace("/login");
+                router.refresh();
+              }}
+              className="flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-red-600 shrink-0"
+            >
+              <LogOut size={14} /> Log out
+            </button>
+          </div>
+        )}
+        <p className="text-[10px] text-slate-400 font-bold tracking-widest uppercase">
+          Admin Panel v1.0
+        </p>
       </div>
     </aside>
   );

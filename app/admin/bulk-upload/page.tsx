@@ -20,6 +20,7 @@ import {
   uploadBulkFile,
   type ImportJob,
 } from "@/lib/api";
+import { useAuth } from "@/hooks/useAuth";
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -60,6 +61,7 @@ function ProgressBar({
 // ── main component ────────────────────────────────────────────────────────────
 
 export default function BulkUploadPage() {
+  const { isAdmin } = useAuth();
   const [file, setFile] = useState<File | null>(null);
   const [dryRun, setDryRun] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -143,6 +145,19 @@ export default function BulkUploadPage() {
   const isDone = activeJob?.status === "done" || activeJob?.status === "failed";
   const isRunning =
     activeJob?.status === "pending" || activeJob?.status === "processing";
+
+  if (!isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#fafafa] p-6 md:p-10">
+        <h1 className="text-3xl font-black text-gray-900 tracking-tight mb-4">
+          Bulk Import
+        </h1>
+        <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3">
+          You have read-only (Viewer) access. Bulk import is disabled.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#fafafa] p-6 md:p-10 space-y-8">

@@ -6,6 +6,7 @@ type Brand = {
   image_original: string | null;
   description: string | null;
   favourite: boolean;
+  show_on_shop?: boolean;
 };
 
 export default function BrandSection({ brands }: { brands: Brand[] }) {

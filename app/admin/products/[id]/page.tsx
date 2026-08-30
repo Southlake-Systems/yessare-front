@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
 import {
   ChevronLeft, Save, Trash2, Info, DollarSign, List, ImageIcon, Upload, X,
 } from "lucide-react";
@@ -31,6 +32,7 @@ type FormState = {
 export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
+  const { isAdmin, ready } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -199,6 +201,16 @@ export default function EditProductPage() {
     return (
       <div className="min-h-screen bg-[#f4f6f8] flex items-center justify-center text-slate-500">
         Loading product...
+      </div>
+    );
+  }
+
+  if (ready && !isAdmin) {
+    return (
+      <div className="min-h-screen bg-[#f4f6f8] p-8">
+        <div className="max-w-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-xl px-4 py-3">
+          You have read-only (Viewer) access. Editing products is disabled.
+        </div>
       </div>
     );
   }

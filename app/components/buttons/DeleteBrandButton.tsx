@@ -1,6 +1,8 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
+import { authFetch } from "@/lib/http";
+import { BASE_URL } from "@/lib/auth";
 
 export default function DeleteBrandButton({
   id,
@@ -10,12 +12,17 @@ export default function DeleteBrandButton({
   const handleDelete = async () => {
     if (!confirm("Delete this brand?")) return;
 
-    await fetch(
-      `http://localhost:8000/brand/${id}/delete/`,
+    const res = await authFetch(
+      `${BASE_URL}/brand/${id}/delete/`,
       {
         method: "DELETE",
       }
     );
+
+    if (!res.ok) {
+      alert("Delete failed");
+      return;
+    }
 
     window.location.reload();
   };

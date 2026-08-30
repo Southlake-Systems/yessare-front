@@ -6,7 +6,7 @@ import Section from "@/app/components/Section";
 import { getBrands, getHomeSections } from "@/lib/api";
 import ShopCarousel from "@/app/components/ShopCarousel";
 export default async function Shop() {
-  const brands = await getBrands();
+  const brands = await getBrands({ shopOnly: true });
   const sections = await getHomeSections();
 
   return (
